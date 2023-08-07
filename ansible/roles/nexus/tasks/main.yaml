@@ -200,4 +200,74 @@
   when: vpc is defined
   register: vpc_result
 
-- name: Configure additional VPC pa
+- name: Configure additional VPC parameters for {{ group_names[2] }}
+  cisco.nxos.nxos_config:
+    lines: "{{ vpc['additional_args'] }}"
+    parents: vpc domain {{ vpc['domain'] }}
+  when: vpc["additional_args"] is defined
+  register: vpc_extra_result
+
+- name: Confiugre VPC interfaces (port-channels) for {{ group_names[2] }}
+  cisco.nxos.nxos_vpc_interface:
+    portchannel: '{{ interface["portchannel"] }}'
+    vpc: '{{ interface["vpc"] | default(omit) }}'
+    peer_link: '{{ interface["peer_link"] | default(omit) }}'
+    state: present
+  loop: '{{ vpc["interfaces"] }}'
+  loop_control:
+    loop_var: interface
+    label: "{{ interface['portchannel'] }}"
+  when: vpc["interfaces"] is defined
+  register: vpc_interface_result
+
+- name: Configure PIM sparse mode for {{ group_names[2] }}
+  cisco.nxos.nxos_pim_interface:
+    interface: "{{ interface['name'] }}"
+    sparse: "{{ interface['pim']['sparse'] | default(false) }}"
+    state: present
+  loop: '{{ interfaces }}'
+  loop_control:
+    loop_var: interface
+    label: "{{ interface['name'] }}"
+  when: interface["pim"] is defined
+
+- name: Configure OSPFv2 for {{ group_names[2] }}
+  cisco.nxos.nxos_ospfv2:
+    config: '{{ ospfv2 }}'
+    state: replaced
+  when: ospfv2 is defined
+  register: ospfv2_result
+
+- name: Configure OSPF interfaces for {{ group_names[2] }}
+  cisco.nxos.nxos_ospf_interfaces:
+    config:
+      - name: "{{ interface['name'] }}"
+        address_family: "{{ interface['ospf'] | default(omit) }}"
+    state: replaced
+  loop: '{{ interfaces }}'
+  loop_control:
+    loop_var: interface
+    label: "{{ interface['name'] }}"
+  when: interface["ospf"] is defined
+  register: ospf_interface_result
+
+- name: Confgure BGP global parameters
+  cisco.nxos.nxos_bgp_global:
+    config: "{{ bgp['global'] }}"
+    state: replaced
+  when: bgp['global'] is defined
+  register: bgp_global_result
+
+- name: Configure BGP address-family neighbors for {{ group_names[2] }}
+  cisco.nxos.nxos_bgp_neighbor_address_family:
+    config:
+      as_number: "{{ bgp['global']['as_number'] }}"
+      neighbors:
+        - neighbor_address: '{{ neighbor["neighbor_address"] }}'
+          address_family: "{{ neighbor['address_family'] }}"
+  loop: '{{ bgp["neighbors"] }}'
+  loop_control:
+    loop_var: neighbor
+    label: "{{ neighbor['neighbor_address'] }}"
+  when: bgp["neighbors"] is defined
+  register: bgp_neighbor_afi_result
