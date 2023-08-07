@@ -1,0 +1,13 @@
+- name: Configure DC2 IOS_XE global parameters
+  hosts: dc2_routers
+  # hosts: dc2-wan32
+  gather_facts: false
+
+  roles:
+    - iosxe_global
+
+  tasks:
+    - name: Save configs
+      cisco.ios.ios_config:
+        save_when: modified
+        backup: false

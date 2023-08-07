@@ -1,0 +1,3 @@
+---
+bgp_global:
+  asn: 65001

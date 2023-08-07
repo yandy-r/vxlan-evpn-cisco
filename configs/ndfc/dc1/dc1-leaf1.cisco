@@ -1,0 +1,624 @@
+!Command: show running-config
+!No configuration change since last restart
+!Time: Sun Jul 23 16:23:51 2023
+
+version 10.3(3) Bios:version
+hostname dc1-leaf1
+vdc dc1-leaf1 id 1
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4097
+  limit-resource port-channel minimum 0 maximum 511
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+
+cfs eth distribute
+nv overlay evpn
+feature nxapi
+feature ospf
+feature bgp
+feature pim
+feature pbr
+feature interface-vlan
+feature vn-segment-vlan-based
+feature lacp
+feature dhcp
+feature vpc
+feature lldp
+feature bfd
+feature nv overlay
+feature ngoam
+
+no password strength-check
+username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
+username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
+username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
+username ndfc password 5 $5$JNOJPO$eW3yaPEPAGbVaMwb.arjSDT5ClEyLZ1Iqdh1URxW.33  role network-admin
+username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
+no ip domain-lookup
+copp profile strict
+configure profile TENANT1
+  vlan 501
+    name TENANT1_VLAN501
+    vn-segment 80001
+  vrf context tenant1
+    vni 80001
+    rd auto
+    address-family ipv4 unicast
+      route-target both auto
+      route-target both auto evpn
+    address-family ipv6 unicast
+      route-target both auto
+      route-target both auto evpn
+  interface Vlan501
+    vrf member tenant1
+    ip forward
+    ipv6 forward
+    no ip redirects
+    no ipv6 redirects
+    mtu 1500
+    no shutdown
+  router bgp 65001
+    vrf tenant1
+      address-family ipv4 unicast
+        advertise l2vpn evpn
+        redistribute direct route-map fabric-rmap-redist-subnet
+        maximum-paths 4
+        maximum-paths ibgp 4
+      address-family ipv6 unicast
+        advertise l2vpn evpn
+        redistribute direct route-map fabric-rmap-redist-subnet
+        maximum-paths 4
+        maximum-paths ibgp 4
+  interface nve1
+    member vni 80001 associate-vrf
+configure terminal
+configure profile TENANT1_VLAN101
+  vlan 101
+    vn-segment 70002
+    name TENANT1_VLAN101
+  interface Vlan101
+    vrf member tenant1
+    no ip redirects
+    no ipv6 redirects
+    ip address 172.16.101.1/24 tag 12345
+    fabric forwarding mode anycast-gateway
+    no shutdown
+  interface nve1
+    member vni 70002
+      mcast-group 239.1.1.1
+  evpn
+    vni 70002 l2
+      rd auto
+      route-target import auto
+      route-target export auto
+configure terminal
+configure profile TENANT2_VLAN200
+  vlan 200
+    vn-segment 70003
+    name TENANT2_VLAN200
+  interface Vlan200
+    vrf member tenant2
+    no ip redirects
+    no ipv6 redirects
+    ip address 172.16.200.1/24 tag 12345
+    fabric forwarding mode anycast-gateway
+    no shutdown
+  interface nve1
+    member vni 70003
+      mcast-group 239.1.1.1
+  evpn
+    vni 70003 l2
+      rd auto
+      route-target import auto
+      route-target export auto
+configure terminal
+configure profile TENANT2
+  vlan 502
+    name TENANT2_VLAN502
+    vn-segment 80002
+  vrf context tenant2
+    vni 80002
+    rd auto
+    address-family ipv4 unicast
+      route-target both auto
+      route-target both auto evpn
+    address-family ipv6 unicast
+      route-target both auto
+      route-target both auto evpn
+  interface Vlan502
+    vrf member tenant2
+    ip forward
+    ipv6 address use-link-local-only
+    no ip redirects
+    no ipv6 redirects
+    mtu 1500
+    no shutdown
+  router bgp 65001
+    vrf tenant2
+      address-family ipv4 unicast
+        advertise l2vpn evpn
+        redistribute direct route-map fabric-rmap-redist-subnet
+        maximum-paths 4
+        maximum-paths ibgp 4
+      address-family ipv6 unicast
+        advertise l2vpn evpn
+        redistribute direct route-map fabric-rmap-redist-subnet
+        maximum-paths 4
+        maximum-paths ibgp 4
+  interface nve1
+    member vni 80002 associate-vrf
+configure terminal
+configure profile TENANT1_VLAN100
+  vlan 100
+    vn-segment 70001
+    name TENANT1_VLAN100
+  interface Vlan100
+    vrf member tenant1
+    no ip redirects
+    no ipv6 redirects
+    ip address 172.16.100.1/24 tag 12345
+    fabric forwarding mode anycast-gateway
+    no shutdown
+  interface nve1
+    member vni 70001
+      mcast-group 239.1.1.1
+  evpn
+    vni 70001 l2
+      rd auto
+      route-target import auto
+      route-target export auto
+configure terminal
+snmp-server user ndfc network-admin auth md5 207B9F4FF592BD4451B6A69DFFC46CC78AE4 priv aes-128 0061F861CA858F1B439EE89EB98932A6AA84 localizedV2key
+snmp-server host 192.168.1.12 traps version 2c public udp-port 2162
+rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
+rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 log trap public description ERROR(3) owner PMON@ERROR
+rmon event 4 log trap public description WARNING(4) owner PMON@WARNING
+rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
+ntp server 24.229.44.105 use-vrf management
+ntp server 66.85.78.80 use-vrf management
+ntp server 216.240.36.24 use-vrf management
+system jumbomtu 1500
+
+fabric forwarding anycast-gateway-mac 0001.0001.0001
+ipv6 switch-packets lla
+ip pim rp-address 100.254.254.1 group-list 239.1.1.0/26 bidir
+ip pim rp-address 100.254.254.65 group-list 239.1.1.64/26 bidir
+ip pim ssm range 232.0.0.0/8
+vlan 1,100-101,200,501-502,3600
+
+route-map fabric-rmap-redist-subnet permit 10
+  match tag 12345
+service dhcp
+ip dhcp relay
+ip dhcp relay information option
+ip dhcp relay information option vpn
+ipv6 dhcp relay
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
+vpc domain 1
+  peer-switch
+  peer-keepalive destination 100.2.0.4 source 100.2.0.1 vrf default
+  delay restore 150
+  peer-gateway
+  auto-recovery reload-delay 360
+  ipv6 nd synchronize
+  ip arp synchronize
+ngoam install acl
+
+nxapi http port 80
+
+
+interface Vlan1
+  no ip redirects
+  no ipv6 redirects
+
+interface Vlan3600
+  description VPC-Peer-Link SVI
+  no shutdown
+  mtu 9216
+  no ip redirects
+  ip address 100.2.8.1/31
+  no ipv6 redirects
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface port-channel27
+  switchport access vlan 100
+  spanning-tree port type edge
+  spanning-tree bpduguard enable
+  vpc 27
+
+interface port-channel500
+  description "vpc-peer-link dc1-leaf1--dc1-leaf3"
+  switchport mode trunk
+  spanning-tree port type network
+  vpc peer-link
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback1
+
+interface Ethernet1/1
+  description connected-to-dc1-spine1-Ethernet1/1
+  no switchport
+  mtu 9216
+  no ip redirects
+  ip address 100.2.8.5/31
+  no ipv6 redirects
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  description connected-to-dc1-spine2-Ethernet1/1
+  no switchport
+  mtu 9216
+  no ip redirects
+  ip address 100.2.8.3/31
+  no ipv6 redirects
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/3
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/4
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/5
+  description "PO 500 (vpc-peer-link) member dc1-leaf1-Ethernet1/5 to dc1-leaf3-Ethernet1/5"
+  switchport mode trunk
+  channel-group 500 mode active
+
+interface Ethernet1/6
+  description "PO 500 (vpc-peer-link) member dc1-leaf1-Ethernet1/6 to dc1-leaf3-Ethernet1/6"
+  switchport mode trunk
+  channel-group 500 mode active
+
+interface Ethernet1/7
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/8
+  switchport access vlan 100
+  channel-group 27 mode active
+
+interface Ethernet1/9
+  switchport access vlan 200
+  spanning-tree port type edge
+  spanning-tree bpduguard disable
+
+interface Ethernet1/10
+  switchport access vlan 101
+  spanning-tree port type edge
+  spanning-tree bpduguard disable
+
+interface Ethernet1/11
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/12
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/13
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/14
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/15
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/16
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/17
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/18
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/19
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/20
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/21
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/22
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/23
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/24
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/25
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/26
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/27
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/28
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/29
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/30
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/31
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/32
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/33
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/34
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/35
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/36
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/37
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/38
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/39
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/40
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/41
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/42
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/43
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/44
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/45
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/46
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/47
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/48
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/49
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/50
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/51
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/52
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/53
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/54
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/55
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/56
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/57
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/58
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/59
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/60
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/61
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/62
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/63
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface Ethernet1/64
+  switchport mode trunk
+  switchport trunk allowed vlan none
+  spanning-tree port type edge trunk
+
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.13/24
+
+interface loopback0
+  description Routing loopback interface
+  ip address 100.2.0.1/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface loopback1
+  description VTEP loopback interface
+  ip address 100.2.4.1/32
+  ip address 100.2.4.6/32 secondary
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+icam monitor scale
+
+line console
+line vty
+boot nxos bootflash:/nxos64-cs.10.3.3.F.bin
+router ospf UNDERLAY
+  bfd
+  router-id 100.2.0.1
+router bgp 65001
+  router-id 100.2.0.1
+  neighbor 100.2.0.2
+    bfd
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  neighbor 100.2.0.7
+    bfd
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+
+apply profile TENANT1
+apply profile TENANT1_VLAN101
+apply profile TENANT2_VLAN200
+apply profile TENANT2
+apply profile TENANT1_VLAN100

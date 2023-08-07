@@ -1,0 +1,21 @@
+---
+- name: Configure DC2 WAN Routers
+  hosts: dc2_wan_routers
+  gather_facts: false
+
+  roles:
+    - ios_xe
+    - wan_rtrs
+
+  tasks:
+    - name: Save configiration
+      cisco.ios.ios_config:
+        save_when: changed
+
+    # - name: Print output
+    #   ansible.builtin.debug:
+    #     msg:
+    #       - '{{ vrf_config }}'
+    #       - '{{ interfaces }}'
+    #       - '{{ bgp_config }}'
+    #       - '{{ bgp_address_family }}'

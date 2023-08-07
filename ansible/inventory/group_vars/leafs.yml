@@ -1,0 +1,15 @@
+features:
+  - nxapi
+  - ospf
+  - bgp
+  - pim
+  - pbr
+  - interface-vlan
+  - vn-segment-vlan-based
+  - lacp
+  - dhcp
+  - vpc
+  - lldp
+  - bfd
+  - nv overlay
+  - ngoam

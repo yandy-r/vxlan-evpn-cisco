@@ -1,0 +1,43 @@
+#jinja2: lstrip_blocks: True, trim_blocks: True
+{% if "type" not in interface or "type" in interface and (interface.type == "layer3" or interface.type == "l3")%}
+interface {{ interface.name }}
+ {% if "description" in interface %}
+ description {{ interface.description }}
+ {% endif %}
+ {% if "encapsulation" in interface %}
+ encapsulation dot1Q {{ interface.encapsulation }}
+ {% endif %}
+ {% if "vrf" in interface %}
+ vrf forwarding {{ interface.vrf }}
+ {% endif %}
+ {% if "ipv4" in interface %}
+ {% for ip in interface.ipv4 %}
+ ip address {{ ip.address }} {{ ip.mask }}
+ {% endfor %}
+ {% else %}
+ no ip address
+ {% endif %}
+ {% if "ipv6" in interface %}
+ {% for ip in interface.ipv6 %}
+ ipv6 address {{ ip.address }}/{{ ip.prefix }}
+ {% endfor %}
+ {% endif %}
+ {% if "cdp" in interface %}
+ {% if interface.cdp %}
+ cdp enable
+ {% elif not interface.cdp %}
+ no cdp enable
+ {% endif %}
+ {% endif %}
+ {% if "mtu" in interface %}
+ mtu {{ interface.mtu }}
+ {% endif %}
+ {% if "enabled" in interface %}
+ {% if interface.enabled %}
+ no shutdown
+ {% else %}
+ shutdown
+ {% endif %}
+ {% endif %}
+{% endif %}
+

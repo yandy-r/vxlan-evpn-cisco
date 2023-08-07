@@ -1,0 +1,6 @@
+---
+- name: Configure DC1 nexus global options
+  import_playbook: dc1/nexus.yml
+
+- name: Configure DC2 nexus global options
+  import_playbook: dc2/nexus.yml

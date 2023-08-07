@@ -1,0 +1,116 @@
+---
+router_id: '100.2.0.7'
+anycast_gateway_mac: '0000.0000.0001'
+interfaces:
+  - name: loopback0
+    description: 'Routing loopback interface'
+    enable: true
+    ipv4:
+      - address: 100.2.0.7/32
+        tag: 100
+    ospf:
+      - afi: ipv4
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+  - name: loopback1
+    description: 'VTEP loopback interface'
+    enable: true
+    ipv4:
+      - address: 100.2.1.7/32
+        tag: 100
+    ospf:
+      - afi: ipv4
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+  - name: Ethernet1/1
+    description: 'Connected to dc1-spine1 Ethernet1/6'
+    enable: true
+    mtu: 9216
+    mode: layer3
+    ipv4:
+      - address: 100.2.8.19/31
+        tag: 100
+    ospf:
+      - afi: ipv4
+        network: 'point-to-point'
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+    redirects: false
+    ipv6_redirects: false
+  - name: Ethernet1/2
+    description: 'Connected to dc1-spine2 Ethernet1/6'
+    enable: true
+    mtu: 9216
+    mode: layer3
+    ipv4:
+      - address: 100.2.8.21/31
+        tag: 100
+    ospf:
+      - afi: ipv4
+        network: 'point-to-point'
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+    redirects: false
+    ipv6_redirects: false
+ospfv2:
+  processes:
+    - process_id: "{{ global_ospfv2['process_id'] }}"
+      router_id: '{{ router_id }}'
+      bfd: true
+bgp_neighbors:
+  spine1: '{{ hostvars["dc1-spine1"]["router_id"] }}'
+  spine2: '{{ hostvars["dc1-spine2"]["router_id"] }}'
+bgp:
+  global:
+    as_number: '{{ bgp_global["asn"] }}'
+    router_id: '{{ router_id }}'
+    neighbors:
+      - neighbor_address: '{{ bgp_neighbors["spine1"] }}'
+        remote_as: '{{ bgp_global["asn"] }}'
+        update_source: loopback0
+        bfd:
+          set: true
+      - neighbor_address: '{{ bgp_neighbors["spine2"] }}'
+        remote_as: '{{ bgp_global["asn"] }}'
+        update_source: loopback0
+        bfd:
+          set: true
+  neighbors:
+    - neighbor_address: '{{ bgp_neighbors["spine1"] }}'
+      address_family:
+        - afi: l2vpn
+          safi: evpn
+          send_community:
+            standard: true
+            extended: true
+    - neighbor_address: '{{ bgp_neighbors["spine2"] }}'
+      address_family:
+        - afi: l2vpn
+          safi: evpn
+          send_community:
+            standard: true
+            extended: true
+multicast:
+  rp:
+    - address: 100.254.254.1
+      group_list: 239.1.1.0/26
+      bidir: true
+    - address: 100.254.254.3
+      group_list: 239.1.1.64/26
+      bidir: true

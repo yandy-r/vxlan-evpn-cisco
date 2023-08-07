@@ -1,0 +1,58 @@
+---
+global_vlans:
+  - name: TENANT1-VLAN100
+    vlan_id: 100
+    mapped_vni: 101100
+  - name: TENANT1-VLAN101
+    vlan_id: 101
+    mapped_vni: 101101
+  - name: TENANT2-VLAN200
+    vlan_id: 200
+    mapped_vni: 101200
+  - name: TENANT1-FORWARD
+    vlan_id: 501
+    mapped_vni: 101501
+  - name: TENANT2-FORWARD
+    vlan_id: 502
+    mapped_vni: 101502
+global_interfaces:
+  - name: Vlan501
+    description: 'EVPN Forward Interface TENANT1'
+    enable: true
+    ip_forward: true
+  - name: Vlan502
+    description: 'EVPN Forward Interface TENANT2'
+    enable: true
+    ip_forward: true
+global_vrfs:
+  base:
+    - name: TENANT1
+      description: 'TENANT1 VRF'
+      rd: auto
+      vni: "{{ global_vlans[3]['mapped_vni'] }}"
+      interfaces:
+        - Vlan501
+    - name: TENANT2
+      description: 'TENANT2 VRF'
+      rd: auto
+      vni: "{{ global_vlans[4]['mapped_vni'] }}"
+      interfaces:
+        - Vlan502
+  afis:
+    # The index key is necessary for proper merging, otherwise information is lost
+    - name: TENANT1
+      afi: ipv4
+      route_target_both_auto_evpn: true
+      index: 101
+    - name: TENANT1
+      afi: ipv6
+      route_target_both_auto_evpn: true
+      index: 102
+    - name: TENANT2
+      afi: ipv4
+      route_target_both_auto_evpn: true
+      index: 103
+    - name: TENANT2
+      afi: ipv6
+      route_target_both_auto_evpn: true
+      index: 104

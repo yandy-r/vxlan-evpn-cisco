@@ -1,0 +1,16 @@
+sub_interfaces:
+  - 501
+  - 502
+vrfs:
+  - name: TENANT1
+    rd: 65001:80001
+    route_import:
+      - 65001:80001
+    route_export:
+      - 65001:80001
+  - name: TENANT2
+    rd: 65001:80002
+    route_import:
+      - 65001:80002
+    route_export:
+      - 65001:80002

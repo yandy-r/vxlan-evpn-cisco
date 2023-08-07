@@ -1,0 +1,203 @@
+---
+# - name: Print out merging of VRF address-family
+#   ansible.builtin.debug:
+#     msg:
+#       - '{{ [(vlans | default([])), (global_vlans | default([]))] | community.general.lists_mergeby("vlan_id", list_merge="append") }}'
+#       - '{{ [(interfaces | default([])), (global_interfaces | default([]))] | community.general.lists_mergeby("name", recursive=true, list_merge="append") }}'
+#       - '{{ [(vrfs["base"] | default([])), (global_vrfs["base"] | default([]))] | community.general.lists_mergeby("name", list_merge="append") }}'
+#       - '{{ [(vrfs["afis"] | default([])), (global_vrfs["afis"] | default([]))] | community.general.lists_mergeby("index", list_merge="append") }}'
+#
+- name: Configure hostname and domain and timezone
+  cisco.nxos.nxos_config:
+    lines:
+      - hostname {{ inventory_hostname }}
+      - ip domain-lookup
+      - ip domain-name {{ domain_name }}
+      - clock timezone {{ timezone["name"] }} {{ timezone["offset"]["hours"] }} {{ timezone["offset"]["minutes"] }}
+  register: hostname
+  when: domain_name is defined
+
+- name: Configure DNS servers
+  cisco.nxos.nxos_config:
+    lines:
+      - ip name-server {{ dns_servers[0]["server"] }} {{ dns_servers[1]["server"] }}
+    parents:
+      - vrf context management
+  register: dns
+  when: dns_servers is defined
+
+- name: Configure NTP servers
+  cisco.nxos.nxos_ntp_global:
+    config:
+      servers:
+        - server: '{{ ntp["address"] }}'
+          vrf: '{{ ntp["vrf"] }}'
+    state: merged
+  loop: '{{ ntp_servers["servers"] }}'
+  loop_control:
+    loop_var: ntp
+    label: '{{ ntp["address"] }}'
+  when: ntp_servers is defined
+
+- name: Confiugre evpn globally
+  cisco.nxos.nxos_evpn_global:
+    nv_overlay_evpn: '{{ evpn }}'
+  when: evpn is defined
+  register: evpn_global_result
+
+- name: Configure features for {{ group_names[2] }}
+  cisco.nxos.nxos_feature:
+    feature: '{{ feature }}'
+    state: enabled
+  loop: '{{ features }}'
+  loop_control:
+    loop_var: feature
+  when: features is defined
+  register: feature_result
+
+- name: Configure global anycast gateway mac
+  cisco.nxos.nxos_overlay_global:
+    anycast_gateway_mac: '{{ anycast_gateway_mac }}'
+  when: anycast_gateway_mac is defined
+  register: anycast_gateway_mac_result
+
+- name: Configure VLANS for {{ group_names[2] }}
+  cisco.nxos.nxos_vlans:
+    config:
+      - vlan_id: '{{ vlan["vlan_id"] }}'
+        name: '{{ vlan["name"] | default(omit) }}'
+        mapped_vni: '{{ vlan["mapped_vni"] | default(omit) }}'
+        enabled: '{{ vlan["enabled"] | default(omit) }}'
+        state: '{{ vlan["state"] | default(omit) }}'
+    state: merged
+  loop: '{{ [(vlans | default([])), (global_vlans | default([]))] | community.general.lists_mergeby("vlan_id", list_merge="append") }}'
+  loop_control:
+    loop_var: vlan
+    label: '{{ vlan["vlan_id"] }}'
+  when: vlans is defined or global_vlans is defined
+  register: vlan_result
+
+- name: Configure PIM RP Bidr addresses for {{ group_names[2] }}
+  cisco.nxos.nxos_pim_rp_address:
+    rp_address: "{{ rp['address'] }}"
+    group_list: "{{ rp['group_list'] | default(omit) }}"
+    bidir: "{{ rp['bidir'] | default(false) }}"
+    route_map: "{{ rp['route_map'] | default(omit) }}"
+    prefix_list: "{{ rp['prefix_list'] | default(omit) }}"
+    state: present
+  loop: "{{ multicast['rp'] }}"
+  loop_control:
+    loop_var: rp
+    label: "{{ rp['address'] }}"
+  when: multicast is defined
+  register: pim_rp_result
+
+- name: Configure LAGs (link-Aggregation Groups) for {{ group_names[2] }}
+  cisco.nxos.nxos_lag_interfaces:
+    config:
+      - name: '{{ lag["name"] }}'
+        members: '{{ lag["members"] }}'
+    state: merged
+  loop: '{{ lags }}'
+  loop_control:
+    loop_var: lag
+    label: "{{ lag['name'] }}"
+  when: lags is defined
+  register: lag_result
+
+- name: Configure interfaces for {{ group_names[2] }}
+  cisco.nxos.nxos_interfaces:
+    config:
+      - name: "{{ interface['name'] }}"
+        description: "{{ interface['description'] | default(omit) }}"
+        duplex: "{{ interface['duplex'] | default(omit) }}"
+        enabled: "{{ interface['enable'] | default(false) }}"
+        fabric_forwarding_anycast_gateway: "{{ interface['fabric_forwarding'] | default(omit) }}"
+        ip_forward: "{{ interface['ip_forward'] | default(omit) }}"
+        mode: "{{ interface['mode'] | default(omit) }}"
+        mtu: "{{ interface['mtu'] | default(omit) }}"
+        speed: "{{ interface['speed'] | default(omit) }}"
+    state: merged
+  loop: '{{ [(interfaces | default([])), (global_interfaces | default([]))] | community.general.lists_mergeby("name", recursive=true, list_merge="append") }}'
+  loop_control:
+    loop_var: interface
+  when: interfaces is defined or global_interfaces is defined
+  register: interface_result
+
+- name: Confiugre VRFs for {{ group_names[2] }}
+  cisco.nxos.nxos_vrf:
+    name: '{{ vrf["name"] }}'
+    description: '{{ vrf["description"] | default(omit) }}'
+    rd: '{{ vrf["rd"] | default(omit) }}'
+    vni: '{{ vrf["vni"] | default(omit) }}'
+    interfaces: '{{ vrf["interfaces"] | default(omit) }}'
+    state: present
+  loop: '{{ [(vrfs["base"] | default([])), (global_vrfs["base"] | default([]))] | community.general.lists_mergeby("name", list_merge="append") }}'
+  loop_control:
+    loop_var: vrf
+    label: '{{ vrf["name"] }}'
+  when: vrfs["base"] is defined or global_vrfs["base"] is defined
+
+- name: Confiugre VRF address-family for {{ group_names[2] }}
+  cisco.nxos.nxos_vrf_af:
+    vrf: '{{ item["name"] }}'
+    afi: '{{ item["afi"] }}'
+    route_target_both_auto_evpn: '{{ item["route_target_both_auto_evpn"] | default(omit) }}'
+    route_targets: '{{ item["route_targets"] | default(omit) }}'
+  loop: '{{ [(vrfs["afis"] | default([])), (global_vrfs["afis"] | default([]))] | community.general.lists_mergeby("index", list_merge="append") }}'
+  loop_control:
+    loop_var: item
+    label: '{{ item["name"] }}'
+  when: vrfs["afis"] is defined or global_vrfs["afis"] is defined
+
+- name: Configure IPv4/Ipv6 addresses for {{ group_names[2] }}
+  cisco.nxos.nxos_l3_interfaces:
+    config:
+      - name: "{{ interface['name'] }}"
+        evpn_multisite_tracking: "{{ interface['evpn_multisite_tracking'] | default(omit) }}"
+        dot1q: "{{ interface['dot1q'] | default(omit) }}"
+        ipv4: "{{ interface['ipv4'] | default(omit) }}"
+        ipv6: "{{ interface['ipv6'] | default(omit) }}"
+        redirects: "{{ interface['redirects'] | default(omit) }}"
+        ipv6_redirects: "{{ interface['ipv6_redirects'] | default(omit) }}"
+        unreachables: "{{ interface['unreachables'] | default(omit) }}"
+    state: merged
+  loop: '{{ interfaces }}'
+  loop_control:
+    loop_var: interface
+    label: "{{ interface['name'] }}"
+  when: interface["ipv4"] is defined or interface["ipv6"] is defined
+  register: ip_interface_result
+
+- name: Confiugre layer-2 interfaces for {{ group_names[2] }}
+  cisco.nxos.nxos_l2_interfaces:
+    config:
+      - name: '{{ interface["name"] }}'
+        mode: '{{ interface["switchport"]["mode"] | default(omit) }}'
+        trunk: '{{ interface["switchport"]["trunk"] | default(omit) }}'
+        access: '{{ interface["switchport"]["access"] | default(omit) }}'
+    state: merged
+  loop: '{{ interfaces }}'
+  loop_control:
+    loop_var: interface
+    label: "{{ interface['name'] }}"
+  when: interface["switchport"] is defined
+
+- name: Configure VPC domain for {{ group_names[2] }}
+  cisco.nxos.nxos_vpc:
+    domain: "{{ vpc['domain'] }}"
+    auto_recovery: "{{ vpc['auto_recovery'] | default(omit) }}"
+    auto_recovery_reload_delay: "{{ vpc['auto_recovery_reload_delay'] | default(omit) }}"
+    delay_restore: "{{ vpc['delay_restore'] | default(omit) }}"
+    delay_restore_interface_vlan: "{{ vpc['delay_restore_interface_vlan'] | default(omit) }}"
+    delay_restore_orphan_port: "{{ vpc['delay_restore_orphan_port'] | default(omit) }}"
+    peer_gw: "{{ vpc['peer_gw'] | default(omit) }}"
+    pkl_dest: "{{ vpc['pkl_dest'] | default(omit) }}"
+    pkl_src: "{{ vpc['pkl_src'] | default(omit) }}"
+    pkl_vrf: "{{ vpc['pkl_vrf'] | default(omit) }}"
+    role_priority: "{{ vpc['role_priority'] | default(omit) }}"
+    state: present
+  when: vpc is defined
+  register: vpc_result
+
+- name: Configure additional VPC pa

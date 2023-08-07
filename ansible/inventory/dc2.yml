@@ -1,0 +1,77 @@
+---
+dc2_spines:
+  hosts:
+    dc2-spine1:
+      ansible_host: 10.100.105.18
+    dc2-spine2:
+      ansible_host: 10.100.105.19
+
+dc2_leafs:
+  hosts:
+    dc2-leaf1:
+      ansible_host: 10.100.105.20
+    dc2-leaf2:
+      ansible_host: 10.100.105.21
+
+dc2_border_gateways:
+  hosts:
+    dc2-bgw1:
+      ansible_host: 10.100.105.22
+    dc2-bgw2:
+      ansible_host: 10.100.105.23
+
+dc2_nexus:
+  children:
+    dc2_leafs:
+    dc2_spines:
+    dc2_border_gateways:
+
+dc2_wan_routers:
+  hosts:
+    c8kv-32:
+      ansible_host: 10.100.105.32
+    c8kv-39:
+      ansible_host: 10.100.105.39
+
+dc2_dci_routers:
+  hosts:
+    c8kv-77:
+      ansible_host: 10.100.105.77
+    c8kv-78:
+      ansible_host: 10.100.105.78
+
+dc2_routers:
+  children:
+    dc2_wan_routers:
+    dc2_dci_routers:
+
+dc2_fortigates:
+  hosts:
+    dc2-fgt1:
+      ansible_host: 10.100.104.41
+
+dc2_paloaltos:
+  hosts:
+    dc2-svc-pa1:
+      ansible_host: 10.100.104.42
+
+dc2_firewalls:
+  children:
+    dc2_fortigates:
+    dc2_paloaltos:
+
+dc2_f5s:
+  hosts:
+    dc2-f5-1:
+      ansible_host: 10.100.104.43
+
+dc2_loadbalancers:
+  children:
+    dc2_f5s:
+
+dc2:
+  children:
+    dc2_nexus:
+    dc2_routers:
+    dc2_firewalls:
+    dc2_loadbalancers:

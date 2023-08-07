@@ -1,0 +1,102 @@
+hostname dci-rtr1
+!
+no ip domain lookup
+ip domain name netlab.local
+!
+enable secret cisco
+!
+!
+username cisco privilege 15 secret cisco
+!
+vrf definition LINK1
+ rd 651001:1
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition LINK2
+ rd 651001:2
+ !
+ address-family ipv4
+ exit-address-family
+!
+interface Loopback0
+ vrf forwarding LINK1
+ ip address 169.255.255.1 255.255.255.255
+!
+interface Loopback1
+ vrf forwarding LINK2
+ ip address 169.255.255.2 255.255.255.255
+!
+interface GigabitEthernet1
+ description to dc1-bgw1
+ mtu 9000
+ vrf forwarding LINK1
+ ip address 198.0.0.1 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ no shutdown
+!
+interface GigabitEthernet2
+ description to s2-bgw1
+ mtu 9000
+ vrf forwarding LINK1
+ ip address 198.0.0.5 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ no shutdown
+!
+interface GigabitEthernet3
+ description to dc1-bgw2
+ mtu 9000
+ vrf forwarding LINK2
+ ip address 198.0.0.9 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ no shutdown
+!
+interface GigabitEthernet4
+ description to s2-bgw2
+ mtu 9000
+ vrf forwarding LINK2
+ ip address 198.0.0.13 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ no shutdown
+!
+router bgp 651001
+ bgp router-id 169.255.255.1
+ bgp log-neighbor-changes
+ !
+ address-family ipv4 vrf LINK1
+  redistribute connected
+  neighbor 198.0.0.2 remote-as 65000
+  neighbor 198.0.0.2 activate
+  neighbor 198.0.0.6 remote-as 65001
+  neighbor 198.0.0.6 activate
+ exit-address-family
+ !
+ address-family ipv4 vrf LINK2
+  redistribute connected
+  neighbor 198.0.0.10 remote-as 65000
+  neighbor 198.0.0.10 activate
+  neighbor 198.0.0.14 remote-as 65001
+  neighbor 198.0.0.14 activate
+ exit-address-family
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ login local
+ stopbits 1
+line vty 0 4
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input ssh
+!
+end
+wr

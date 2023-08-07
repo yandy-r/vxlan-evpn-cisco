@@ -1,0 +1,11 @@
+- name: Configure the DC2 spine switches
+  hosts: dc2_spines
+  gather_facts: false
+
+  roles:
+    - spines
+
+  tasks:
+    - name: Save configuration
+      cisco.nxos.nxos_config:
+        save_when: modified

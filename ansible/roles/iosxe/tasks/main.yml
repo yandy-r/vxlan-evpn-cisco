@@ -1,0 +1,77 @@
+---
+- name: Configure hostname and domain and timezone
+  cisco.ios.ios_config:
+    lines:
+      - hostname {{ inventory_hostname }}
+      - ip domain lookup vrf {{ dns_servers["vrf"] }} source-interface {{ dns_servers["source_interface"] }}
+      - ip domain name {{ domain_name }}
+      - clock timezone {{ timezone["name"] }} {{ timezone["offset"]["hours"] }} {{ timezone["offset"]["minutes"] }}
+  register: hostname
+  when: domain_name is defined
+
+- name: Configure DNS servers
+  cisco.ios.ios_config:
+    lines:
+      - ip name-server vrf {{ dns_servers["vrf"] }} {{ dns_servers["servers"][0]["server"] }} {{ dns_servers["servers"][1]["server"] }}
+  register: dns
+  when: dns_servers is defined
+
+- name: Configure NTP servers
+  cisco.ios.ios_ntp_global:
+    config:
+      servers:
+        - server: '{{ ntp["address"] }}'
+          vrf: '{{ ntp["vrf"] }}'
+    state: merged
+  loop: '{{ ntp_servers["servers"] }}'
+  loop_control:
+    loop_var: ntp
+    label: '{{ ntp["address"] }}'
+  when: ntp_servers is defined
+
+- name: Configure VRFs
+  cisco.ios.ios_vrf:
+    vrfs: '{{ vrfs }}'
+    state: present
+  when: vrfs is defined
+  register: vrf_config
+
+- name: Configure interfaces
+  cisco.ios.ios_config:
+    src: interfaces.j2
+    backup: false
+  loop: '{{ interfaces }}'
+  loop_control:
+    loop_var: interface
+    label: '{{ interface["name"] }}'
+  when: interfaces is defined
+  register: interfaces
+
+- name: Configure BGP
+  cisco.ios.ios_bgp_global:
+    config: '{{ bgp_options["global"] }}'
+  when: bgp_options["global"] is defined
+  register: bgp_config
+
+- name: Configure BGP address family
+  cisco.ios.ios_bgp_address_family:
+    config:
+      as_number: '{{ bgp_options["global"]["as_number"] }}'
+      address_family: '{{ bgp_options["afi"] }}'
+  when: bgp_options["afi"] is defined
+  register: bgp_address_family
+
+- name: Configure BGP maximum paths
+  cisco.ios.ios_config:
+    lines:
+      - maximum-paths {{ bgp_options["global"]["maximum_paths"]["paths"] }}
+      - maximum-paths ibgp {{ bgp_options["global"]["maximum_paths"]["ibgp"] }}
+    parents:
+      - router bgp {{ bgp_options["global"]["as_number"] }}
+      - address-family ipv4 vrf {{ vrf["name"] }}
+  loop: '{{ vrfs }}'
+  loop_control:
+    loop_var: vrf
+    label: '{{ vrf["name"] }}'
+  when: bgp_options["global"]["maximum_paths"] is defined
+  register: bgp_address_family

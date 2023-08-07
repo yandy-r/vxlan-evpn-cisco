@@ -1,0 +1,12 @@
+- name: Configure DC1 IOS_XE global parameters
+  hosts: dc1_routers
+  gather_facts: false
+
+  roles:
+    - iosxe
+
+  tasks:
+    - name: Save configs
+      cisco.ios.ios_config:
+        save_when: modified
+        backup: false

@@ -1,0 +1,226 @@
+---
+router_id: '100.2.0.3'
+anycast_gateway_mac: '0000.0000.0001'
+vlans:
+  - name: VPC-Peer-link
+    vlan_id: 3600
+vrfs:
+  base:
+    - name: TENANT1
+      interfaces:
+        - Vlan100
+        - Vlan101
+    - name: TENANT2
+      interfaces:
+        - Vlan200
+lags:
+  - name: port-channel1
+    members:
+      - member: Ethernet1/5
+        mode: active
+      - member: Ethernet1/6
+        mode: active
+  - name: port-channel27
+    members:
+      - member: Ethernet1/8
+        mode: active
+interfaces:
+  - name: loopback0
+    description: 'Routing loopback interface'
+    enable: true
+    ipv4:
+      - address: 100.2.0.3/32
+        tag: 100
+    ospf:
+      - afi: ipv4
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+  - name: loopback1
+    description: 'VTEP loopback interface'
+    enable: true
+    ipv4:
+      - address: 100.2.1.3/32
+        tag: 100
+      - address: 100.2.1.10/32
+        tag: 100
+        secondary: true
+    ospf:
+      - afi: ipv4
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+  - name: Ethernet1/1
+    description: 'Connected to dc1-spine1 Ethernet1/1'
+    enable: true
+    mtu: 9216
+    mode: layer3
+    ipv4:
+      - address: 100.2.8.5/31
+        tag: 100
+    ospf:
+      - afi: ipv4
+        network: 'point-to-point'
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+    redirects: false
+    ipv6_redirects: false
+  - name: Ethernet1/2
+    description: 'Connected to dc1-spine2 Ethernet1/1'
+    enable: true
+    mtu: 9216
+    mode: layer3
+    ipv4:
+      - address: 100.2.8.3/31
+        tag: 100
+    ospf:
+      - afi: ipv4
+        network: 'point-to-point'
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+    redirects: false
+    ipv6_redirects: false
+  - name: Ethernet1/5
+    description: 'Connected to dc1-leaf3 Ethernet1/5'
+    enable: true
+  - name: Ethernet1/6
+    description: 'Connected to dc1-leaf3 Ethernet1/6'
+    enable: true
+  - name: port-channel1
+    description: 'Connected to dc1-leaf3 port-channel1: VPC Peer-link'
+    enable: true
+    mode: layer2
+    switchport:
+      mode: trunk
+      trunk:
+        allowed_vlans: 1-3699
+  - name: port-channel27
+    description: 'VPC to dc1-server27'
+    enable: true
+    mode: layer2
+    switchport:
+      access:
+        vlan: 100
+  - name: Vlan100
+    description: 'VLAN 100'
+    enable: true
+    ipv4:
+      - address: 172.16.100.1/24
+        tag: 201101
+    redirects: false
+    ipv6_redirects: false
+    fabric_forwarding: true
+  - name: Vlan101
+    description: 'VLAN 101'
+    enable: true
+    ipv4:
+      - address: 172.16.101.1/24
+        tag: 201101
+    redirects: false
+    ipv6_redirects: false
+    fabric_forwarding: true
+  - name: Vlan200
+    description: 'VLAN 200'
+    enable: true
+    ipv4:
+      - address: 172.16.200.1/24
+        tag: 201200
+    redirects: false
+    ipv6_redirects: false
+    fabric_forwarding: true
+  - name: Vlan3600
+    description: 'VLAN 3600 VPC Peer-link routing'
+    enable: true
+    mtu: 9216
+    ipv4:
+      - address: 100.2.8.0/31
+        tag: 100
+    redirects: false
+    ipv6_redirects: false
+    ospf:
+      - afi: ipv4
+        network: 'point-to-point'
+        processes:
+          - process_id: "{{ global_ospfv2['process_id'] }}"
+            area:
+              area_id: "{{ global_ospfv2['area_id'] }}"
+    pim:
+      sparse: true
+ospfv2:
+  processes:
+    - process_id: "{{ global_ospfv2['process_id'] }}"
+      router_id: '{{ router_id }}'
+      bfd: true
+bgp_neighbors:
+  spine1: '{{ hostvars["dc1-spine1"]["router_id"] }}'
+  spine2: '{{ hostvars["dc1-spine2"]["router_id"] }}'
+bgp:
+  global:
+    as_number: '{{ bgp_global["asn"] }}'
+    router_id: '{{ router_id }}'
+    neighbors:
+      - neighbor_address: '{{ bgp_neighbors["spine1"] }}'
+        remote_as: '{{ bgp_global["asn"] }}'
+        update_source: loopback0
+        bfd:
+          set: true
+      - neighbor_address: '{{ bgp_neighbors["spine2"] }}'
+        remote_as: '{{ bgp_global["asn"] }}'
+        update_source: loopback0
+        bfd:
+          set: true
+  neighbors:
+    - neighbor_address: '{{ bgp_neighbors["spine1"] }}'
+      address_family:
+        - afi: l2vpn
+          safi: evpn
+          send_community:
+            standard: true
+            extended: true
+    - neighbor_address: '{{ bgp_neighbors["spine2"] }}'
+      address_family:
+        - afi: l2vpn
+          safi: evpn
+          send_community:
+            standard: true
+            extended: true
+multicast:
+  rp:
+    - address: 100.254.254.1
+      group_list: 239.1.1.0/26
+      bidir: true
+    - address: 100.254.254.3
+      group_list: 239.1.1.64/26
+      bidir: true
+vpc:
+  domain: 1
+  delay_restore: 150
+  auto_recovery_reload_delay: 360
+  peer_gw: true
+  pkl_dest: '{{ hostvars["dc1-leaf3"]["router_id"] }}'
+  pkl_src: '{{ router_id }}'
+  pkl_vrf: default
+  additional_args:
+    - peer-switch
+    - peer-gateway
+    - ipv6 nd synchronize
+    - ip arp synchronize
+  interfaces:
+    - portchannel: 1
+      peer_link: true
+    - portchannel: 27
+      vpc: 27

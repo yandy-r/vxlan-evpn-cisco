@@ -1,0 +1,79 @@
+all:
+  children:
+    dc1:
+    dc2:
+
+leafs:
+  children:
+    dc1_leafs:
+    dc2_leafs:
+
+spines:
+  children:
+    dc1_spines:
+    dc2_spines:
+
+border_gateways:
+  children:
+    dc1_border_gateways:
+    dc2_border_gateways:
+
+dc1_vtep_switches:
+  children:
+    dc1_leafs:
+    dc1_border_gateways:
+
+dc2_vtep_switches:
+  children:
+    dc2_leafs:
+    dc2_border_gateways:
+
+vtep_switches:
+  children:
+    dc1_leafs:
+    dc1_border_gateways:
+    dc2_leafs:
+    dc2_border_gateways:
+
+wan_routers:
+  children:
+    dc1_wan_routers:
+    dc2_wan_routers:
+
+routers:
+  children:
+    dc1_routers:
+    dc2_routers:
+
+nexus:
+  children:
+    dc1_nexus:
+    dc2_nexus:
+
+iosxe_routers:
+  children:
+    routers:
+
+iosxe_switches:
+  children:
+    corp1_switches:
+
+iosxe:
+  children:
+    iosxe_routers:
+    iosxe_switches:
+
+firewalls:
+  children:
+    dc1_firewalls:
+    dc2_firewalls:
+
+loadbalancers:
+  children:
+    dc1_loadbalancers:
+    dc2_loadbalancers:
+
+test_hosts:
+  hosts:
+    c9kv-48:
+    dc1-spine1:

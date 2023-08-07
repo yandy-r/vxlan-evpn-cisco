@@ -1,0 +1,6 @@
+---
+- name: Configure DC1 iosxe global options
+  import_playbook: dc1/iosxe_global.yml
+
+- name: Configure DC2 iosxe global options
+  import_playbook: dc2/iosxe_global.yml

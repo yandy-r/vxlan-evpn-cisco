@@ -1,0 +1,15 @@
+---
+corp1_switches:
+  hosts:
+    c9kv-48:
+      ansible_host: '10.100.105.48'
+    c9kv-49:
+      ansible_host: '10.100.105.49'
+    c9kv-50:
+      ansible_host: '10.100.105.50'
+    c9kv-51:
+      ansible_host: '10.100.105.51'
+    c9kv-52:
+      ansible_host: '10.100.105.52'
+    c9kv-53:
+      ansible_host: '10.100.105.53'

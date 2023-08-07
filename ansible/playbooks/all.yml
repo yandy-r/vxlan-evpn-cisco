@@ -1,0 +1,5 @@
+- name: Configure all global nexus parameters
+  import_playbook: nexus.yml
+
+- name: Configure all ios global parameters
+  import_playbook: iosxe.yml

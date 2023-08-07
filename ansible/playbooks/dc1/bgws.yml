@@ -1,0 +1,11 @@
+- name: Configure the DC1 Border Gateways
+  hosts: dc1_border_gateways
+  gather_facts: false
+
+  roles:
+    - nexus
+
+  tasks:
+    - name: Save configuration
+      cisco.nxos.nxos_config:
+        save_when: modified

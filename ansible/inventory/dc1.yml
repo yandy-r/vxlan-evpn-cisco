@@ -1,0 +1,80 @@
+---
+dc1_spines:
+  hosts:
+    dc1-spine1:
+      ansible_host: 10.100.105.11
+    dc1-spine2:
+      ansible_host: 10.100.105.12
+
+dc1_leafs:
+  hosts:
+    dc1-leaf1:
+      ansible_host: 10.100.105.13
+    dc1-leaf2:
+      ansible_host: 10.100.105.14
+    dc1-leaf3:
+      ansible_host: 10.100.105.15
+
+vpc_leafs:
+  hosts:
+    dc1-leaf1:
+    dc1-leaf3:
+
+dc1_border_gateways:
+  hosts:
+    dc1-bgw1:
+      ansible_host: 10.100.105.16
+    dc1-bgw2:
+      ansible_host: 10.100.105.17
+
+dc1_nexus:
+  children:
+    dc1_leafs:
+    dc1_spines:
+    dc1_border_gateways:
+
+dc1_wan_routers:
+  hosts:
+    c8kv-30:
+      ansible_host: 10.100.105.30
+    c8kv-31:
+      ansible_host: 10.100.105.31
+
+dc1_dci_routers:
+  hosts:
+    c8kv-75:
+      ansible_host: 10.100.105.75
+    c8kv-76:
+      ansible_host: 10.100.105.76
+
+dc1_routers:
+  children:
+    dc1_wan_routers:
+    dc1_dci_routers:
+
+dc1_fortigates:
+  hosts:
+    dc1-fgt1:
+      ansible_host: 10.100.104.31
+    dc1-svc-fgt1:
+      ansible_host: 10.100.104.32
+
+dc1_firewalls:
+  children:
+    dc1_fortigates:
+
+dc1_f5s:
+  hosts:
+    dc1-f5-1:
+      ansible_host: 10.100.104.33
+
+dc1_loadbalancers:
+  children:
+    dc1_f5s:
+
+dc1:
+  children:
+    dc1_nexus:
+    dc1_routers:
+    dc1_firewalls:
+    dc1_loadbalancers:
