@@ -1,6 +1,0 @@
----
-- name: Backup Network Configs DC1 IOSXE
-  import_playbook: dc1/backup_iosxe.yml
-
-- name: Backup Network Configs DC1 NXOS
-  import_playbook: dc1/backup_nxos.yml
