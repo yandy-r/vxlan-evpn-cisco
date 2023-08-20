@@ -1,0 +1,66 @@
+---
+dc1-spine1:
+  hostname: 10.100.105.11
+  port: 22
+  platform: nxos
+  groups:
+    - spines
+    - nexus
+    - dc1-spines
+    - network
+  data:
+    site: dc1
+    role: spine
+    type: nexus
+dc1-spine2:
+  hostname: 10.100.105.12
+  port: 22
+  platform: nxos
+  groups:
+    - spines
+    - nexus
+    - dc1-spines
+    - network
+  data:
+    site: dc1
+    role: spine
+    type: nexus
+dc1-leaf1:
+  hostname: 10.100.105.13
+  port: 22
+  platform: nxos
+  groups:
+    - leafs
+    - nexus
+    - dc1-leafs
+    - network
+  data:
+    site: dc1
+    role: leaf
+    type: nexus
+dc1-leaf2:
+  hostname: 10.100.105.14
+  port: 22
+  platform: nxos
+  groups:
+    - leafs
+    - nexus
+    - dc1-leafs
+    - network
+  data:
+    site: dc1
+    role: leaf
+    type: nexus
+dc1-leaf3:
+  hostname: 10.100.105.15
+  port: 22
+  platform: nxos
+  groups:
+    - leafs
+    - nexus
+    - dc1-leafs
+    - network
+  data:
+    site: dc1
+    role: leaf
+    type: nexus
