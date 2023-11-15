@@ -306,7 +306,7 @@ config firewall address
     next
     edit "dc_srvs"
         set allow-routing enable
-        set subnet 172.16.0.0 255.255.0.0
+        set subnet 169.1.0.0 255.255.0.0
     next
     edit "b2_local_subnet_1"
         set allow-routing enable

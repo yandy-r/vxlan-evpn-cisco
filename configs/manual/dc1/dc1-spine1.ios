@@ -19,9 +19,9 @@ username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 
 ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
-ip pim ssm range 232.0.0.0/8
 ip pim anycast-rp 169.254.255.100 169.254.255.1
 ip pim anycast-rp 169.254.255.100 169.254.255.2
+ip pim ssm range 232.0.0.0/8
 
 interface mgmt0
   no cdp enable

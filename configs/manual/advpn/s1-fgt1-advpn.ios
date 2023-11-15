@@ -147,7 +147,7 @@ config router bgp
             set prefix 10.100.104.0 255.255.255.0
         next
         edit 3
-            set prefix 172.16.0.0 255.255.0.0
+            set prefix 169.1.0.0 255.255.0.0
         next
     end
 end
@@ -185,7 +185,7 @@ config firewall address
     next
     edit "dc_srvs"
         set allow-routing enable
-        set subnet 172.16.0.0 255.255.0.0
+        set subnet 169.1.0.0 255.255.0.0
     next
     edit "b1_subnets"
         set allow-routing enable

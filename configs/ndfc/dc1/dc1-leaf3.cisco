@@ -80,7 +80,7 @@ configure profile TENANT1_VLAN101
     vrf member tenant1
     no ip redirects
     no ipv6 redirects
-    ip address 172.16.101.1/24 tag 12345
+    ip address 169.1.101.1/24 tag 12345
     fabric forwarding mode anycast-gateway
     no shutdown
   interface nve1
@@ -100,7 +100,7 @@ configure profile TENANT2_VLAN200
     vrf member tenant2
     no ip redirects
     no ipv6 redirects
-    ip address 172.16.200.1/24 tag 12345
+    ip address 169.1.200.1/24 tag 12345
     fabric forwarding mode anycast-gateway
     no shutdown
   interface nve1
@@ -156,7 +156,7 @@ configure profile TENANT1_VLAN100
     vrf member tenant1
     no ip redirects
     no ipv6 redirects
-    ip address 172.16.100.1/24 tag 12345
+    ip address 169.1.100.1/24 tag 12345
     fabric forwarding mode anycast-gateway
     no shutdown
   interface nve1
