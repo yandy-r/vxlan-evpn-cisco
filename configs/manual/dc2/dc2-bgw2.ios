@@ -238,6 +238,7 @@ router bgp 65002
     address-family ipv4 unicast
       next-hop-self
   address-family l2vpn evpn
+    advertise-pip
   neighbor 169.168.12.10
     remote-as 65001
     update-source loopback100
