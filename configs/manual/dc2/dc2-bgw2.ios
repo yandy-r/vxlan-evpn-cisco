@@ -173,22 +173,32 @@ interface Ethernet1/12
   no ip address
   shutdown
 
+interface Ethernet1/14
+  description to dc2-f5-1: port1.1
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+
+interface Ethernet1/15
+  description to dc2-f5-1: port1.2
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+
 interface Ethernet1/3 - 4
   shutdown
 
 interface Ethernet1/9 - 10
   shutdown
 
-interface Ethernet1/13 - 64
+interface Ethernet1/13
   shutdown
 
-interface Ethernet1/3 - 4
-  shutdown
-
-interface Ethernet1/9 - 10
-  shutdown
-
-interface Ethernet1/12 - 64
+interface Ethernet1/16 - 64
   shutdown
 
 interface loopback0
