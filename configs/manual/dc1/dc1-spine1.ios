@@ -12,10 +12,10 @@ username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7 
 username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 
-ip pim rp-address 192.168.255.100 group-list 224.0.0.0/4
+ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
-ip pim anycast-rp 192.168.255.100 192.168.255.1
-ip pim anycast-rp 192.168.255.100 192.168.255.2
+ip pim anycast-rp 169.254.255.100 169.254.255.1
+ip pim anycast-rp 169.254.255.100 169.254.255.2
 
 interface Ethernet1/1
   description Link to leaf-1
@@ -79,13 +79,13 @@ interface Ethernet1/7 - 64
   shutdown
 
 interface loopback0
-  ip address 192.168.255.1/32
+  ip address 169.254.255.1/32
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 interface loopback1
   description Loopback for Anycast RP
-  ip address 192.168.255.100/32
+  ip address 169.254.255.100/32
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 icam monitor scale
@@ -96,12 +96,12 @@ line console
 line vty
 
 router ospf UNDERLAY
-  router-id 192.168.255.1
+  router-id 169.254.255.1
 
 router bgp 65000
-  router-id 192.168.255.1
+  router-id 169.254.255.1
   address-family l2vpn evpn
-  neighbor 192.168.255.0/24
+  neighbor 169.254.255.0/24
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn

@@ -20,7 +20,7 @@ no ip domain-lookup
 ip domain-name netlab.local
 
 fabric forwarding anycast-gateway-mac 0000.0000.aaaa
-ip pim rp-address 192.168.255.100 group-list 224.0.0.0/4
+ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
 vlan 1,100-101,501,666
 vlan 100
@@ -135,7 +135,7 @@ interface Ethernet1/11
   no shutdown
 
 interface loopback0
-  ip address 192.168.255.10/32 tag 12
+  ip address 169.254.255.10/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
@@ -152,10 +152,10 @@ line vty
   exec-timeout 60
 
 router ospf UNDERLAY
-  router-id 192.168.255.10
+  router-id 169.254.255.10
   redistribute direct route-map DIRECT-TO-OSPF
 router bgp 65000
-  router-id 192.168.255.10
+  router-id 169.254.255.10
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
@@ -168,13 +168,13 @@ router bgp 65000
       send-community
       send-community extended
       rewrite-evpn-rt-asn
-  neighbor 192.168.255.1
+  neighbor 169.254.255.1
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 192.168.255.2
+  neighbor 169.254.255.2
     remote-as 65000
     update-source loopback0
     address-family l2vpn evpn

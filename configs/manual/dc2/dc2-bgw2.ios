@@ -20,7 +20,7 @@ username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 
 fabric forwarding anycast-gateway-mac 0000.0000.bbbb
-ip pim rp-address 192.168.255.200 group-list 224.0.0.0/4
+ip pim rp-address 169.254.255.200 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
 vlan 1,100-101,501,666
 vlan 100
@@ -104,7 +104,7 @@ interface Ethernet1/6
   evpn multisite dci-tracking
 
 interface loopback0
-  ip address 192.168.255.111/32 tag 12
+  ip address 169.254.255.111/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
@@ -115,11 +115,11 @@ interface loopback100
   ip pim sparse-mode
 
 router ospf UNDERLAY
-  router-id 192.168.255.111
+  router-id 169.254.255.111
   redistribute direct route-map DIRECT-TO-OSPF
 
 router bgp 65001
-  router-id 192.168.255.111
+  router-id 169.254.255.111
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
@@ -132,13 +132,13 @@ router bgp 65001
       send-community
       send-community extended
       rewrite-evpn-rt-asn
-  neighbor 192.168.255.101
+  neighbor 169.254.255.101
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 192.168.255.102
+  neighbor 169.254.255.102
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
