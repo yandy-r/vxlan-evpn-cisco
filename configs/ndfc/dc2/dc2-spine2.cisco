@@ -42,8 +42,8 @@ ntp server 216.240.36.24 use-vrf management
 system jumbomtu 1500
 
 ipv6 switch-packets lla
-ip pim rp-address 100.254.255.1 group-list 239.1.1.0/26 bidir
-ip pim rp-address 100.254.255.65 group-list 239.1.1.64/26 bidir
+ip pim rp-address 169.254.255.1 group-list 239.1.1.0/26 bidir
+ip pim rp-address 169.254.255.65 group-list 239.1.1.64/26 bidir
 ip pim ssm range 232.0.0.0/8
 vlan 1
 
@@ -59,7 +59,7 @@ interface Ethernet1/1
   description connected-to-s2-leaf1-Ethernet1/2
   mtu 9216
   no ip redirects
-  ip address 100.2.24.10/30
+  ip address 169.2.24.10/30
   no ipv6 redirects
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -70,7 +70,7 @@ interface Ethernet1/2
   description connected-to-s2-leaf2-Ethernet1/2
   mtu 9216
   no ip redirects
-  ip address 100.2.24.6/30
+  ip address 169.2.24.6/30
   no ipv6 redirects
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -89,7 +89,7 @@ interface Ethernet1/5
   description connected-to-s2-bgw1-Ethernet1/2
   mtu 9216
   no ip redirects
-  ip address 100.2.24.21/30
+  ip address 169.2.24.21/30
   no ipv6 redirects
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -100,7 +100,7 @@ interface Ethernet1/6
   description connected-to-s2-bgw2-Ethernet1/2
   mtu 9216
   no ip redirects
-  ip address 100.2.24.29/30
+  ip address 169.2.24.29/30
   no ipv6 redirects
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -352,14 +352,14 @@ interface loopback0
 
 interface loopback2
   description Primary loopback interface for Phantom RP
-  ip address 100.254.255.66/30
+  ip address 169.254.255.66/30
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 interface loopback3
   description Fallback loopback interface for Phantom RP
-  ip address 100.254.255.2/29
+  ip address 169.254.255.2/29
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode

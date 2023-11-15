@@ -1,5 +1,5 @@
 !
-! Last configuration change at 01:47:27 UTC Sat Jul 22 2023 by admin
+! Last configuration change at 00:10:07 UTC Thu Jul 20 2023
 !
 version 17.9
 service timestamps debug datetime msec
@@ -10,24 +10,13 @@ platform qfp utilization monitor load 80
 platform punt-keepalive disable-kernel-core
 platform console serial
 !
-hostname c8kv-39
+hostname c8kv-78
 !
 boot-start-marker
 boot-end-marker
 !
 !
-vrf definition TENANT1
- rd 65002:80001
- route-target export 65002:80001
- route-target import 65002:80001
- !
- address-family ipv4
-  route-target export 65002:80001
-  route-target import 65002:80001
- exit-address-family
-!
-!
-vrf definition mgmt
+vrf definition Mgmt-vrf
  !
  address-family ipv4
  exit-address-family
@@ -94,17 +83,17 @@ crypto pki certificate chain SLA-TrustPoint
   D697DF7F 28
         quit
 !
-license udi pid C8000V sn 9NJCBOP58CP
+license udi pid C8000V sn 9VR6Y74M1VB
 diagnostic bootup level minimal
 memory free low-watermark processor 63718
 !
 !
-enable secret 9 $9$0GDzjsVk9iR.UU$5M64QoI0Jv9acT44BV9DcgBqgYT3PiNjJ14IjtLsu9s
+enable secret 9 $9$P2UHM24TKaAGYk$x9kbtaLwcB8mzZxXMU61tPDPGd.Ve5CL7Astd4PAbB.
 !
 !
-username admin privilege 15 secret 9 $9$AwbZsVsp9IB17E$K.tuawJfdjZcAfpiQJtZOMs4OHOepz3a/rbcRlYH5fw
-username cisco privilege 15 secret 9 $9$jgvesBoigR53r.$rOv5t1abh0W6xB3TWw0.JinhE.MVYRqU2sBbEuE1qtc
-username ndfc privilege 15 secret 9 $9$Gm4lDGdQKSYfUU$Whb.iOSHtxfFqNOFNrGrpJX9.hYkYakaLiVoO9lVc4Q
+username admin privilege 15 secret 9 $9$tFYesoTCT869cE$FIBF3gtlOjqSrE0sQDP7Q5mqDHRyjBVXwiLkQcyPJVk
+username cisco privilege 15 secret 9 $9$jfg8Ijfqhf.rgk$AKAYzFN3Auq1CAB5ecfQWr3AINFjfnqlulxhio2rmmk
+username ndfc privilege 15 secret 9 $9$ShliGVXXF1qlvE$chOsISlWQh8EPzoWCFQ7nADbRw/pHi1K5oxkZ9TJb6o
 !
 redundancy
 !
@@ -117,125 +106,58 @@ cdp run
 !
 !
 interface Loopback0
- description Routing loopback
- ip address 169.254.254.39 255.255.255.255
-!
-interface Loopback501
- vrf forwarding TENANT1
- ip address 169.254.254.39 255.255.255.255
+ ip address 169.254.78.78 255.255.255.255
 !
 interface GigabitEthernet1
- description Connected to s2-bgw2: Eth1/5
- mtu 9000
- no ip address
+ no mtu
+ ip address 169.28.78.2 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
  negotiation auto
  cdp enable
-!
-interface GigabitEthernet1.501
- encapsulation dot1Q 501
- vrf forwarding TENANT1
- ip address 169.28.39.2 255.255.255.252
+ no shutdown
 !
 interface GigabitEthernet2
- description Connected to s2-bgw1: Eth1/6
- mtu 9000
- no ip address
+ no mtu
+ ip address 169.26.78.2 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
  negotiation auto
  cdp enable
-!
-interface GigabitEthernet2.501
- encapsulation dot1Q 501
- vrf forwarding TENANT1
- ip address 169.26.39.2 255.255.255.252
+ no shutdown
 !
 interface GigabitEthernet3
- no ip address
- shutdown
+ no mtu
+ ip address 169.76.78.2 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
  negotiation auto
  cdp enable
-!
-interface GigabitEthernet4
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet5
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet6
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet7
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet8
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet9
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet10
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet11
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet12
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet13
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet14
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet15
- no ip address
- shutdown
- negotiation auto
+ no shutdown
 !
 interface GigabitEthernet16
  description management
- vrf forwarding mgmt
- ip address 10.100.105.39 255.255.255.0
+ vrf forwarding Mgmt-vrf
+ ip address 10.100.105.78 255.255.255.0
  negotiation auto
+ no shutdown
 !
 router bgp 65022
- bgp router-id 169.254.254.39
- bgp always-compare-med
+ bgp router-id 169.254.78.78
  bgp log-neighbor-changes
- bgp deterministic-med
- bgp bestpath med confed missing-as-worst
- bgp bestpath compare-routerid
- maximum-paths 4
- maximum-paths ibgp 4
+ no bgp default ipv4-unicast
+ neighbor 169.26.78.1 remote-as 65002
+ neighbor 169.26.78.1 fall-over bfd
+ neighbor 169.28.78.1 remote-as 65002
+ neighbor 169.28.78.1 fall-over bfd
+ neighbor 169.76.78.1 remote-as 65011
+ neighbor 169.76.78.1 fall-over bfd
  !
- address-family ipv4 vrf TENANT1
-  redistribute connected metric 100
-  neighbor 169.26.39.1 remote-as 65002
-  neighbor 169.26.39.1 activate
-  neighbor 169.28.39.1 remote-as 65002
-  neighbor 169.28.39.1 activate
+ address-family ipv4
+  redistribute connected route-map conn-to-bgp
+  neighbor 169.26.78.1 activate
+  neighbor 169.28.78.1 activate
+  neighbor 169.76.78.1 activate
   maximum-paths 4
   maximum-paths ibgp 4
  exit-address-family
@@ -244,10 +166,13 @@ ip forward-protocol nd
 no ip http server
 ip http secure-server
 !
-ip route vrf mgmt 0.0.0.0 0.0.0.0 10.100.105.1
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.105.1
 ip ssh version 2
 !
 !
+!
+route-map conn-to-bgp permit 100
+ set origin igp
 !
 !
 !

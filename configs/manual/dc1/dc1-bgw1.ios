@@ -51,6 +51,8 @@ vrf context management
 
 route-map DIRECT-TO-BGP permit 10
   match tag 12
+route-map DIRECT-TO-BGP permit 20
+  match tag 54321
 route-map INTERNET-TO-TENANTS permit 10
   match tag 666
 
@@ -126,36 +128,37 @@ interface Ethernet1/2
 interface Ethernet1/5
   description Link to c8k-30
   no switchport
-  mtu 9216
+  no mtu
   no ip redirects
   no ip address
-  shutdown
+  no shutdown
   evpn multisite dci-tracking
 
 interface Ethernet1/6
   description to c8k-31
   no switchport
-  mtu 9216
+  no mtu
   no ip address
-  shutdown
+  no shutdown
   evpn multisite dci-tracking
 
 interface Ethernet1/7
-  description Link to c8k-75
+  description to c8kv-75
   no switchport
-  mtu 9216
-  no ip redirects
-  no ip address
-  shutdown
+  no mtu
+  ip address 169.13.75.1/30 tag 54321
+  no shutdown
   evpn multisite dci-tracking
+  no shutdown
 
 interface Ethernet1/8
-  description to c8k-76
+  description to c8kv-76
   no switchport
-  mtu 9216
-  no ip address
-  shutdown
+  no mtu
+  ip address 169.13.76.1/30 tag 54321
+  no shutdown
   evpn multisite dci-tracking
+  no shutdown
 
 interface Ethernet1/11
   description to dc1-fgt1: port2
@@ -205,8 +208,17 @@ router bgp 65001
   router-id 169.254.255.10
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
+  neighbor 169.13.75.2
+    remote-as 65011
+    update-source Ethernet1/7
+    address-family ipv4 unicast
+      next-hop-self
+  neighbor 169.13.76.2
+    remote-as 65011
+    update-source Ethernet1/8
+    address-family ipv4 unicast
+      next-hop-self
   address-family l2vpn evpn
-  no neighbor 169.168.12.122
   neighbor 169.168.12.22
     remote-as 65002
     update-source loopback100

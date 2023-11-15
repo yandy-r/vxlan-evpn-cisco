@@ -16,7 +16,7 @@ boot-start-marker
 boot-end-marker
 !
 !
-vrf definition mgmt
+vrf definition Mgmt-vrf
  !
  address-family ipv4
  exit-address-family
@@ -106,117 +106,58 @@ cdp run
 !
 !
 interface Loopback0
- ip address 100.254.76.76 255.255.255.255
+ ip address 169.254.76.76 255.255.255.255
 !
 interface GigabitEthernet1
  mtu 9000
- ip address 100.15.76.2 255.255.255.252
+ ip address 169.15.76.2 255.255.255.252
  no ip redirects
  no ip proxy-arp
  negotiation auto
  cdp enable
- bfd interval 100 min_rx 100 multiplier 5
+ no shutdown
 !
 interface GigabitEthernet2
  mtu 9000
- ip address 100.13.76.2 255.255.255.252
+ ip address 169.13.76.2 255.255.255.252
  no ip redirects
  no ip proxy-arp
  negotiation auto
  cdp enable
- bfd interval 100 min_rx 100 multiplier 5
+ no shutdown
 !
 interface GigabitEthernet3
  mtu 9000
- ip address 100.76.78.1 255.255.255.252
+ ip address 169.76.78.1 255.255.255.252
  no ip redirects
  no ip proxy-arp
  negotiation auto
  cdp enable
- bfd interval 100 min_rx 100 multiplier 5
-!
-interface GigabitEthernet4
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet5
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet6
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet7
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet8
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet9
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet10
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet11
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet12
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet13
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet14
- no ip address
- shutdown
- negotiation auto
-!
-interface GigabitEthernet15
- no ip address
- shutdown
- negotiation auto
+ no shutdown
 !
 interface GigabitEthernet16
  description management
- vrf forwarding mgmt
+ vrf forwarding Mgmt-vrf
  ip address 10.100.105.76 255.255.255.0
  negotiation auto
+ no shutdown
 !
 router bgp 65011
- bgp router-id 100.254.76.76
+ bgp router-id 169.254.76.76
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
- neighbor 100.13.76.1 remote-as 65001
- neighbor 100.13.76.1 fall-over bfd
- neighbor 100.15.76.1 remote-as 65001
- neighbor 100.15.76.1 fall-over bfd
- neighbor 100.76.78.2 remote-as 65022
- neighbor 100.76.78.2 fall-over bfd
+ neighbor 169.13.76.1 remote-as 65001
+ neighbor 169.13.76.1 fall-over bfd
+ neighbor 169.15.76.1 remote-as 65001
+ neighbor 169.15.76.1 fall-over bfd
+ neighbor 169.76.78.2 remote-as 65022
+ neighbor 169.76.78.2 fall-over bfd
  !
  address-family ipv4
   redistribute connected route-map conn-to-bgp
-  neighbor 100.13.76.1 activate
-  neighbor 100.15.76.1 activate
-  neighbor 100.76.78.2 activate
+  neighbor 169.13.76.1 activate
+  neighbor 169.15.76.1 activate
+  neighbor 169.76.78.2 activate
   maximum-paths 4
   maximum-paths ibgp 4
  exit-address-family
@@ -225,7 +166,7 @@ ip forward-protocol nd
 no ip http server
 ip http secure-server
 !
-ip route vrf mgmt 0.0.0.0 0.0.0.0 10.100.105.1
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.105.1
 ip ssh version 2
 !
 !

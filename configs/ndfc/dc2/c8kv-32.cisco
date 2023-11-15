@@ -118,11 +118,11 @@ cdp run
 !
 interface Loopback0
  description Routing loopback
- ip address 100.254.254.32 255.255.255.255
+ ip address 169.254.254.32 255.255.255.255
 !
 interface Loopback501
  vrf forwarding TENANT1
- ip address 100.254.254.32 255.255.255.255
+ ip address 169.254.254.32 255.255.255.255
 !
 interface GigabitEthernet1
  description Connected to s2-bgw1: Eth1/5
@@ -134,7 +134,7 @@ interface GigabitEthernet1
 interface GigabitEthernet1.501
  encapsulation dot1Q 501
  vrf forwarding TENANT1
- ip address 100.26.32.2 255.255.255.252
+ ip address 169.26.32.2 255.255.255.252
 !
 interface GigabitEthernet2
  description Connected to s2-bgw2: Eth1/6
@@ -146,7 +146,7 @@ interface GigabitEthernet2
 interface GigabitEthernet2.501
  encapsulation dot1Q 501
  vrf forwarding TENANT1
- ip address 100.28.32.2 255.255.255.252
+ ip address 169.28.32.2 255.255.255.252
 !
 interface GigabitEthernet3
  no ip address
@@ -221,7 +221,7 @@ interface GigabitEthernet16
  negotiation auto
 !
 router bgp 65022
- bgp router-id 100.254.254.32
+ bgp router-id 169.254.254.32
  bgp always-compare-med
  bgp log-neighbor-changes
  bgp deterministic-med
@@ -232,10 +232,10 @@ router bgp 65022
  !
  address-family ipv4 vrf TENANT1
   redistribute connected metric 100
-  neighbor 100.26.32.1 remote-as 65002
-  neighbor 100.26.32.1 activate
-  neighbor 100.28.32.1 remote-as 65002
-  neighbor 100.28.32.1 activate
+  neighbor 169.26.32.1 remote-as 65002
+  neighbor 169.26.32.1 activate
+  neighbor 169.28.32.1 remote-as 65002
+  neighbor 169.28.32.1 activate
   maximum-paths 4
   maximum-paths ibgp 4
  exit-address-family

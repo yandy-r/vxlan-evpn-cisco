@@ -70,12 +70,12 @@ configure profile TENANT2
         redistribute direct route-map fabric-rmap-redist-subnet
         maximum-paths 4
         maximum-paths ibgp 4
-      neighbor 100.15.30.2
+      neighbor 169.15.30.2
         remote-as 65011
         address-family ipv4 unicast
           send-community both
           route-map extcon-rmap-filter-allow-host out
-      neighbor 100.15.31.2
+      neighbor 169.15.31.2
         remote-as 65011
         address-family ipv4 unicast
           send-community both
@@ -83,12 +83,12 @@ configure profile TENANT2
   interface Ethernet1/6.502
     encapsulation dot1q 502
     vrf member tenant2
-    ip address 100.15.30.1/30
+    ip address 169.15.30.1/30
     no shutdown
   interface Ethernet1/5.502
     encapsulation dot1q 502
     vrf member tenant2
-    ip address 100.15.31.1/30
+    ip address 169.15.31.1/30
     no shutdown
   interface nve1
     member vni 80002 associate-vrf
@@ -154,12 +154,12 @@ configure profile TENANT1
         redistribute direct route-map fabric-rmap-redist-subnet
         maximum-paths 4
         maximum-paths ibgp 4
-      neighbor 100.15.30.2
+      neighbor 169.15.30.2
         remote-as 65011
         address-family ipv4 unicast
           send-community both
           route-map extcon-rmap-filter-allow-host out
-      neighbor 100.15.31.2
+      neighbor 169.15.31.2
         remote-as 65011
         address-family ipv4 unicast
           send-community both
@@ -167,12 +167,12 @@ configure profile TENANT1
   interface Ethernet1/6.501
     encapsulation dot1q 501
     vrf member tenant1
-    ip address 100.15.30.1/30
+    ip address 169.15.30.1/30
     no shutdown
   interface Ethernet1/5.501
     encapsulation dot1q 501
     vrf member tenant1
-    ip address 100.15.31.1/30
+    ip address 169.15.31.1/30
     no shutdown
   interface nve1
     member vni 80001 associate-vrf
@@ -205,8 +205,8 @@ system jumbomtu 1500
 
 fabric forwarding anycast-gateway-mac 0001.0001.0001
 ipv6 switch-packets lla
-ip pim rp-address 100.254.254.1 group-list 239.1.1.0/26 bidir
-ip pim rp-address 100.254.254.65 group-list 239.1.1.64/26 bidir
+ip pim rp-address 169.254.254.1 group-list 239.1.1.0/26 bidir
+ip pim rp-address 169.254.254.65 group-list 239.1.1.64/26 bidir
 ip pim ssm range 232.0.0.0/8
 vlan 1,100-101,200,501-502
 
@@ -218,18 +218,18 @@ route-map extcon-rmap-filter deny 10
   match ip address prefix-list default-route
 route-map extcon-rmap-filter deny 20
   match ip address prefix-list host-route
-route-map extcon-rmap-filter permit 1000
+route-map extcon-rmap-filter permit 169.
 route-map extcon-rmap-filter-allow-host deny 10
   match ip address prefix-list default-route
-route-map extcon-rmap-filter-allow-host permit 1000
+route-map extcon-rmap-filter-allow-host permit 169.
 route-map extcon-rmap-filter-v6 deny 10
   match ipv6 address prefix-list default-route-v6
 route-map extcon-rmap-filter-v6 deny 20
   match ipv6 address prefix-list host-route-v6
-route-map extcon-rmap-filter-v6 permit 1000
+route-map extcon-rmap-filter-v6 permit 169.
 route-map extcon-rmap-filter-v6-allow-host deny 10
   match ipv6 address prefix-list default-route-v6
-route-map extcon-rmap-filter-v6-allow-host permit 1000
+route-map extcon-rmap-filter-v6-allow-host permit 169.
 route-map fabric-rmap-redist-subnet permit 10
   match tag 12345
 route-map rmap-redist-direct permit 10
@@ -260,7 +260,7 @@ interface Ethernet1/1
   no switchport
   mtu 9216
   no ip redirects
-  ip address 100.2.8.19/31
+  ip address 169.2.8.19/31
   no ipv6 redirects
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -273,7 +273,7 @@ interface Ethernet1/2
   no switchport
   mtu 9216
   no ip redirects
-  ip address 100.2.8.21/31
+  ip address 169.2.8.21/31
   no ipv6 redirects
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
@@ -304,14 +304,14 @@ interface Ethernet1/6
 interface Ethernet1/7
   no switchport
   mtu 9216
-  ip address 100.15.76.1/30 tag 54321
+  ip address 169.15.76.1/30 tag 54321
   no shutdown
   evpn multisite dci-tracking
 
 interface Ethernet1/8
   no switchport
   mtu 9216
-  ip address 100.15.75.1/30 tag 54321
+  ip address 169.15.75.1/30 tag 54321
   no shutdown
   evpn multisite dci-tracking
 
@@ -602,18 +602,18 @@ interface mgmt0
 
 interface loopback0
   description Routing loopback interface
-  ip address 100.2.0.6/32 tag 54321
+  ip address 169.2.0.6/32 tag 54321
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 interface loopback1
   description VTEP loopback interface
-  ip address 100.2.4.5/32 tag 54321
+  ip address 169.2.4.5/32 tag 54321
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 interface loopback100
-  ip address 100.100.0.1/32 tag 54321
+  ip address 169.100.0.1/32 tag 54321
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 icam monitor scale
@@ -623,9 +623,9 @@ line vty
 boot nxos bootflash:/nxos64-cs.10.3.3.F.bin
 router ospf UNDERLAY
   bfd
-  router-id 100.2.0.6
+  router-id 169.2.0.6
 router bgp 65001
-  router-id 100.2.0.6
+  router-id 169.2.0.6
   address-family ipv4 unicast
     redistribute direct route-map rmap-redist-direct
   address-family l2vpn evpn
@@ -648,26 +648,26 @@ router bgp 65001
       send-community
       send-community extended
       rewrite-evpn-rt-asn
-  neighbor 100.2.0.2
+  neighbor 169.2.0.2
     bfd
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 100.2.0.7
+  neighbor 169.2.0.7
     bfd
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 100.15.75.2
+  neighbor 169.15.75.2
     remote-as 65011
     update-source Ethernet1/8
     address-family ipv4 unicast
       next-hop-self
-  neighbor 100.15.76.2
+  neighbor 169.15.76.2
     remote-as 65011
     update-source Ethernet1/7
     address-family ipv4 unicast

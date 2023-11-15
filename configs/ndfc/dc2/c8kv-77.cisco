@@ -105,34 +105,34 @@ cdp run
 !
 !
 interface Loopback0
- ip address 100.254.77.77 255.255.255.255
+ ip address 169.254.77.77 255.255.255.255
 !
 interface GigabitEthernet1
  mtu 9000
- ip address 100.26.77.2 255.255.255.252
+ ip address 169.26.77.2 255.255.255.252
  no ip redirects
  no ip proxy-arp
  negotiation auto
  cdp enable
- bfd interval 100 min_rx 100 multiplier 5
+ bfd interval 169.min_rx 169.multiplier 5
 !
 interface GigabitEthernet2
  mtu 9000
- ip address 100.28.77.2 255.255.255.252
+ ip address 169.28.77.2 255.255.255.252
  no ip redirects
  no ip proxy-arp
  negotiation auto
  cdp enable
- bfd interval 100 min_rx 100 multiplier 5
+ bfd interval 169.min_rx 169.multiplier 5
 !
 interface GigabitEthernet3
  mtu 9000
- ip address 100.75.77.2 255.255.255.252
+ ip address 169.75.77.2 255.255.255.252
  no ip redirects
  no ip proxy-arp
  negotiation auto
  cdp enable
- bfd interval 100 min_rx 100 multiplier 5
+ bfd interval 169.min_rx 169.multiplier 5
 !
 interface GigabitEthernet4
  no ip address
@@ -201,21 +201,21 @@ interface GigabitEthernet16
  negotiation auto
 !
 router bgp 65022
- bgp router-id 100.254.77.77
+ bgp router-id 169.254.77.77
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
- neighbor 100.26.77.1 remote-as 65002
- neighbor 100.26.77.1 fall-over bfd
- neighbor 100.28.77.1 remote-as 65002
- neighbor 100.28.77.1 fall-over bfd
- neighbor 100.75.77.1 remote-as 65011
- neighbor 100.75.77.1 fall-over bfd
+ neighbor 169.26.77.1 remote-as 65002
+ neighbor 169.26.77.1 fall-over bfd
+ neighbor 169.28.77.1 remote-as 65002
+ neighbor 169.28.77.1 fall-over bfd
+ neighbor 169.75.77.1 remote-as 65011
+ neighbor 169.75.77.1 fall-over bfd
  !
  address-family ipv4
   redistribute connected route-map conn-to-bgp
-  neighbor 100.26.77.1 activate
-  neighbor 100.28.77.1 activate
-  neighbor 100.75.77.1 activate
+  neighbor 169.26.77.1 activate
+  neighbor 169.28.77.1 activate
+  neighbor 169.75.77.1 activate
   maximum-paths 4
   maximum-paths ibgp 4
  exit-address-family

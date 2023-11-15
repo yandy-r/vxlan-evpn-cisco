@@ -150,15 +150,15 @@ cdp run
 !
 interface Loopback0
  description Routing loopback
- ip address 100.254.254.31 255.255.255.255
+ ip address 169.254.254.31 255.255.255.255
 !
 interface Loopback501
  vrf forwarding TENANT1
- ip address 100.254.254.31 255.255.255.255
+ ip address 169.254.254.31 255.255.255.255
 !
 interface Loopback502
  vrf forwarding TENANT2
- ip address 100.254.254.31 255.255.255.255
+ ip address 169.254.254.31 255.255.255.255
 !
 interface GigabitEthernet1
  description Connected to dc1-bgw2: Eth1/5
@@ -170,12 +170,12 @@ interface GigabitEthernet1
 interface GigabitEthernet1.501
  encapsulation dot1Q 501
  vrf forwarding TENANT1
- ip address 100.15.31.2 255.255.255.252
+ ip address 169.15.31.2 255.255.255.252
 !
 interface GigabitEthernet1.502
  encapsulation dot1Q 502
  vrf forwarding TENANT2
- ip address 100.15.31.2 255.255.255.252
+ ip address 169.15.31.2 255.255.255.252
 !
 interface GigabitEthernet2
  description Connected to dc1-bgw1: Eth1/6
@@ -187,12 +187,12 @@ interface GigabitEthernet2
 interface GigabitEthernet2.501
  encapsulation dot1Q 501
  vrf forwarding TENANT1
- ip address 100.13.31.2 255.255.255.252
+ ip address 169.13.31.2 255.255.255.252
 !
 interface GigabitEthernet2.502
  encapsulation dot1Q 502
  vrf forwarding TENANT2
- ip address 100.13.31.2 255.255.255.252
+ ip address 169.13.31.2 255.255.255.252
 !
 interface GigabitEthernet3
  mtu 9000
@@ -268,7 +268,7 @@ interface GigabitEthernet16
  negotiation auto
 !
 router bgp 65011
- bgp router-id 100.254.254.31
+ bgp router-id 169.254.254.31
  bgp always-compare-med
  bgp log-neighbor-changes
  bgp deterministic-med
@@ -279,20 +279,20 @@ router bgp 65011
  !
  address-family ipv4 vrf TENANT1
   redistribute connected metric 100
-  neighbor 100.13.31.1 remote-as 65001
-  neighbor 100.13.31.1 activate
-  neighbor 100.15.31.1 remote-as 65001
-  neighbor 100.15.31.1 activate
+  neighbor 169.13.31.1 remote-as 65001
+  neighbor 169.13.31.1 activate
+  neighbor 169.15.31.1 remote-as 65001
+  neighbor 169.15.31.1 activate
   maximum-paths 4
   maximum-paths ibgp 4
  exit-address-family
  !
  address-family ipv4 vrf TENANT2
   redistribute connected metric 100
-  neighbor 100.13.31.1 remote-as 65001
-  neighbor 100.13.31.1 activate
-  neighbor 100.15.31.1 remote-as 65001
-  neighbor 100.15.31.1 activate
+  neighbor 169.13.31.1 remote-as 65001
+  neighbor 169.13.31.1 activate
+  neighbor 169.15.31.1 remote-as 65001
+  neighbor 169.15.31.1 activate
   maximum-paths 4
   maximum-paths ibgp 4
  exit-address-family
