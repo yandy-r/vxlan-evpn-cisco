@@ -162,7 +162,7 @@ configure profile TENANT1_VLAN100
       route-target export auto
 configure terminal
 snmp-server user ndfc network-admin auth md5 0075816BBFE1E88291A3C65654BEFF715225 priv aes-128 2155BA5E8E98F08388818B4E04FFA9324E2D localizedV2key
-snmp-server host 192.168.1.12 traps version 2c public udp-port 2162
+snmp-server host 169.168.1.12 traps version 2c public udp-port 2162
 rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
 rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
 rmon event 3 log trap public description ERROR(3) owner PMON@ERROR

@@ -1,22 +1,29 @@
 hostname dc1-bgw2
 
+feature nxapi
+cfs eth distribute
 nv overlay evpn
 feature ospf
 feature bgp
 feature pim
-feature isis
-feature fabric forwarding
+feature pbr
 feature interface-vlan
 feature vn-segment-vlan-based
+feature lacp
+feature dhcp
+feature lldp
+feature bfd
 feature nv overlay
-
-evpn multisite border-gateway 1
-  delay-restore time 30
+evpn multisite border-gateway 65001
+  delay-restore time 300
+feature ngoam
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
+username ndfc password 5 $5$BPJOLM$322Ud7Bs5zBeQ0ZV8g28iYDPWgeOi9WrqOW4FeNrRW1  role network-admin
+username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 
 fabric forwarding anycast-gateway-mac 0000.0000.aaaa
@@ -32,9 +39,6 @@ vlan 501
 
 route-map DIRECT-TO-BGP permit 10
   match tag 12
-route-map DIRECT-TO-OSPF permit 10
-  match interface Ethernet1/5
-  set metric-type type-1
 route-map INTERNET-TO-TENANTS permit 10
   match tag 666
 
@@ -87,22 +91,6 @@ interface Ethernet1/2
   no shutdown
   evpn multisite fabric-tracking
 
-interface Ethernet1/5
-  description Link to s2-border2
-  no switchport
-  mtu 9216
-  no ip redirects
-  ip address 198.0.0.10 255.255.255.252
-  no shutdown
-  evpn multisite dci-tracking
-
-interface Ethernet1/6
-  description to s3-bgw1: Eth2
-  no switchport
-  mtu 9216
-  no shutdown
-  evpn multisite dci-tracking
-
 interface loopback0
   ip address 169.254.255.11/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
@@ -110,20 +98,19 @@ interface loopback0
 
 interface loopback100
   description Loopback for EVPN Border Gateway
-  ip address 192.168.12.11/32 tag 12
+  ip address 169.168.12.11/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 router ospf UNDERLAY
   router-id 169.254.255.11
-  redistribute direct route-map DIRECT-TO-OSPF
 
 router bgp 65001
   router-id 169.254.255.11
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
-  neighbor 192.168.12.111
+  neighbor 169.168.12.111
     remote-as 65001
     update-source loopback100
     ebgp-multihop 5

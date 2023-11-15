@@ -126,7 +126,7 @@ interface Ethernet1/11
   description to s2-fgt1: port2
   no switchport
   vrf member INTERNET
-  ip address 192.168.0.18/30 tag 666
+  ip address 169.168.0.18/30 tag 666
   no shutdown
 
 interface loopback0
@@ -136,7 +136,7 @@ interface loopback0
 
 interface loopback100
   description Loopback for EVPN Border Gateway
-  ip address 192.168.12.110/32 tag 12
+  ip address 169.168.12.110/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
@@ -153,7 +153,7 @@ router bgp 65001
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
-  neighbor 192.168.12.10
+  neighbor 169.168.12.10
     remote-as 65001
     update-source loopback100
     ebgp-multihop 5
@@ -186,7 +186,7 @@ router bgp 65001
       send-community extended
   vrf INTERNET
     address-family ipv4 unicast
-    neighbor 192.168.0.17
+    neighbor 169.168.0.17
       remote-as 64000
       address-family ipv4 unicast
         send-community

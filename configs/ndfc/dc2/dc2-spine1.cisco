@@ -30,7 +30,7 @@ username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 copp profile strict
 snmp-server user ndfc network-admin auth md5 057ADBCA5D8212794E432780EACF2AD7BEE0 priv aes-128 2145EAF4679C60597D515F99B6947BBFDF95 localizedV2key
-snmp-server host 192.168.1.12 traps version 2c public udp-port 2162
+snmp-server host 169.168.1.12 traps version 2c public udp-port 2162
 rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
 rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
 rmon event 3 log trap public description ERROR(3) owner PMON@ERROR

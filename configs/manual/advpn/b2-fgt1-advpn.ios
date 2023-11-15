@@ -303,7 +303,7 @@ config firewall address
     next
     edit "bgws_to_fgt"
         set allow-routing enable
-        set subnet 192.168.0.0 255.255.0.0
+        set subnet 169.168.0.0 255.255.0.0
     next
     edit "dc_srvs"
         set allow-routing enable

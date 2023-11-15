@@ -122,7 +122,7 @@ configure profile TENANT1
     member vni 80001 associate-vrf
 configure terminal
 snmp-server user ndfc network-admin auth md5 494200127F909AF6246B915F812531A5DC57 priv aes-128 3339491B3ADAC3B8211AD311814377F19B1B localizedV2key
-snmp-server host 192.168.1.12 traps version 2c public udp-port 2162
+snmp-server host 169.168.1.12 traps version 2c public udp-port 2162
 rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
 rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
 rmon event 3 log trap public description ERROR(3) owner PMON@ERROR

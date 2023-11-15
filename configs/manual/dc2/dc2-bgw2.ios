@@ -110,7 +110,7 @@ interface loopback0
 
 interface loopback100
   description Loopback for EVPN Border Gateway
-  ip address 192.168.12.111/32 tag 12
+  ip address 169.168.12.111/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
@@ -123,7 +123,7 @@ router bgp 65001
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
-  neighbor 192.168.12.11
+  neighbor 169.168.12.11
     remote-as 65001
     update-source loopback100
     ebgp-multihop 5
