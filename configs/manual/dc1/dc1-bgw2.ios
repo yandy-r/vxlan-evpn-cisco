@@ -185,7 +185,16 @@ router bgp 65001
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
-  neighbor 169.168.12.111
+  neighbor 169.168.12.22
+    remote-as 65002
+    update-source loopback100
+    ebgp-multihop 5
+    peer-type fabric-external
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      rewrite-evpn-rt-asn
+  neighbor 169.168.12.23
     remote-as 65002
     update-source loopback100
     ebgp-multihop 5

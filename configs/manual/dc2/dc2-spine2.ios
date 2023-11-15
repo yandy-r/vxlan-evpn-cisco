@@ -1,21 +1,36 @@
-hostname s2-spine2
+hostname dc2-spine2
 
+feature nxapi
 nv overlay evpn
 feature ospf
 feature bgp
 feature pim
-feature interface-vlan
+feature lldp
+feature bfd
+feature nv overlay
+feature ngoam
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
+username ndfc password 5 $5$MIKLNB$wvC/Pnp7zguCk1j9PeIvsVzsLf/Ifiw30DB3p1BTrt1  role network-admin
+username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 
-ip pim rp-address 169.254.255.200 group-list 224.0.0.0/4
+ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
+ip pim anycast-rp 169.254.255.100 169.254.255.1
+ip pim anycast-rp 169.254.255.100 169.254.255.2
 ip pim ssm range 232.0.0.0/8
-ip pim anycast-rp 169.254.255.200 169.254.255.101
-ip pim anycast-rp 169.254.255.200 169.254.255.102
+
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.19/24
+
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
 
 interface Ethernet1/1
   description Link to leaf-1
@@ -68,13 +83,13 @@ interface Ethernet1/7 - 64
   shutdown
 
 interface loopback0
-  ip address 169.254.255.102/32
+  ip address 169.254.255.19/32
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 interface loopback1
   description Loopback for Anycast RP
-  ip address 169.254.255.200/32
+  ip address 169.254.255.100/32
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
@@ -84,16 +99,18 @@ line console
 line vty
 
 router ospf UNDERLAY
-  router-id 169.254.255.102
-router bgp 65001
-  router-id 169.254.255.102
+  router-id 169.254.255.19
+
+router bgp 65002
+  router-id 169.254.255.19
   address-family l2vpn evpn
   neighbor 169.254.255.0/24
-    remote-as 65001
+    remote-as 65002
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
       route-reflector-client
+
 end
 wr

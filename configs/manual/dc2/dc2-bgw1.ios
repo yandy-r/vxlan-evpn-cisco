@@ -1,28 +1,35 @@
-hostname s2-bgw1
+hostname dc2-bgw1
 
+feature nxapi
+cfs eth distribute
 nv overlay evpn
 feature ospf
 feature bgp
 feature pim
-feature isis
-feature fabric forwarding
+feature pbr
 feature interface-vlan
 feature vn-segment-vlan-based
+feature lacp
+feature dhcp
+feature lldp
+feature bfd
 feature nv overlay
-
-evpn multisite border-gateway 2
-  delay-restore time 30
+evpn multisite border-gateway 65002
+  delay-restore time 300
+feature ngoam
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
+username ndfc password 5 $5$BPJOLM$322Ud7Bs5zBeQ0ZV8g28iYDPWgeOi9WrqOW4FeNrRW1  role network-admin
+username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 
-fabric forwarding anycast-gateway-mac 0000.0000.bbbb
-ip pim rp-address 169.254.255.200 group-list 224.0.0.0/4
+fabric forwarding anycast-gateway-mac 0000.0000.aaaa
+ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
-vlan 1,100-101,501
+vlan 1,100-101,501,666
 vlan 100
   vn-segment 100100
 vlan 101
@@ -32,11 +39,20 @@ vlan 501
 vlan 666
   vn-segment 100666
 
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.22/24
+  no shutdown
+
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
+
 route-map DIRECT-TO-BGP permit 10
   match tag 12
-route-map DIRECT-TO-OSPF permit 10
-  match interface Ethernet1/5
-  set metric-type type-1
+route-map INTERNET-TO-TENANTS permit 10
+  match tag 666
 
 vrf context INTERNET
   vni 100666
@@ -44,7 +60,9 @@ vrf context INTERNET
   address-family ipv4 unicast
     route-target both auto
     route-target both auto evpn
+    route-target import 66:50001
     route-target import 66:50001 evpn
+    route-target import 66:50002
     route-target import 66:50002 evpn
     route-target import 66:6
     route-target import 66:6 evpn
@@ -70,16 +88,16 @@ interface Vlan666
 interface nve1
   no shutdown
   host-reachability protocol bgp
-  source-interface loopback0
+  source-interface loopback1
   multisite border-gateway interface loopback100
   member vni 50001 associate-vrf
   member vni 100666 associate-vrf
   member vni 100100
     multisite ingress-replication
-    mcast-group 239.0.1.100
+    mcast-group 239.0.0.100
   member vni 100101
     multisite ingress-replication
-    mcast-group 239.0.1.100
+    mcast-group 239.0.0.100
 
 interface Ethernet1/1
   description Link to spine1
@@ -106,37 +124,71 @@ interface Ethernet1/2
   evpn multisite fabric-tracking
 
 interface Ethernet1/5
-  description Link to dc1-border1
+  description Link to c8k-32
   no switchport
   mtu 9216
   no ip redirects
-  ip address 198.0.0.6/30
-  no shutdown
+  no ip address
+  shutdown
   evpn multisite dci-tracking
 
 interface Ethernet1/6
-  description to dc1-bgw1-eth1/6
+  description to c8k-39
   no switchport
   mtu 9216
-  ip address 198.1.0.2/30
-  no shutdown
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/7
+  description Link to c8k-77
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/8
+  description to c8k-78
+  no switchport
+  mtu 9216
+  no ip address
+  shutdown
   evpn multisite dci-tracking
 
 interface Ethernet1/11
-  description to s2-fgt1: port2
+  description to dc2-fgt1: port2
   no switchport
+  mtu 9216
   vrf member INTERNET
-  ip address 169.168.0.18/30 tag 666
+  no ip redirects
+  ip address 169.0.2.2/30 tag 666
   no shutdown
 
+interface Ethernet1/3 - 4
+  shutdown
+
+interface Ethernet1/9 - 10
+  shutdown
+
+interface Ethernet1/12 - 64
+  shutdown
+
 interface loopback0
-  ip address 169.254.255.110/32 tag 12
+  ip address 169.254.255.22/32 tag 12
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface loopback1
+  description VTEP loopback interface
+  ip address 169.254.255.122/32 tag 54321
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
 interface loopback100
   description Loopback for EVPN Border Gateway
-  ip address 169.168.12.110/32 tag 12
+  ip address 169.168.12.22/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
@@ -144,12 +196,13 @@ cli alias name wr copy run start
 line console
   exec-timeout 0
 line vty
+  exec-timeout 60
 
 router ospf UNDERLAY
-  router-id 169.254.255.110
-  redistribute direct route-map DIRECT-TO-OSPF
-router bgp 65001
-  router-id 169.254.255.110
+  router-id 169.254.255.22
+
+router bgp 65002
+  router-id 169.254.255.22
   address-family ipv4 unicast
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
@@ -162,36 +215,34 @@ router bgp 65001
       send-community
       send-community extended
       rewrite-evpn-rt-asn
-  neighbor 169.254.255.101
+  neighbor 169.168.12.11
     remote-as 65001
+    update-source loopback100
+    ebgp-multihop 5
+    peer-type fabric-external
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      rewrite-evpn-rt-asn
+  neighbor 169.254.255.18
+    remote-as 65002
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 169.254.255.102
-    remote-as 65001
+  neighbor 169.254.255.19
+    remote-as 65002
     update-source loopback0
     address-family l2vpn evpn
-      send-community
-      send-community extended
-  neighbor 198.0.0.5
-    remote-as 651001
-    address-family ipv4 unicast
-      send-community
-      send-community extended
-  neighbor 198.1.0.1
-    remote-as 65001
-    address-family ipv4 unicast
       send-community
       send-community extended
   vrf INTERNET
     address-family ipv4 unicast
-    neighbor 169.168.0.17
-      remote-as 64000
+    neighbor 169.0.2.1
+      remote-as 64001
       address-family ipv4 unicast
         send-community
         send-community extended
-
 evpn
   vni 100100 l2
     rd auto
@@ -201,6 +252,5 @@ evpn
     rd auto
     route-target import auto
     route-target export auto
-
-end
-wr
+    exit
+  exit

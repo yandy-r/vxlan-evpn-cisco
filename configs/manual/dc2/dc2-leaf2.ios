@@ -1,22 +1,31 @@
-hostname s2-leaf2
+hostname dc2-leaf2
 
+cfs eth distribute
 nv overlay evpn
+feature nxapi
 feature ospf
 feature bgp
 feature pim
-feature fabric forwarding
+feature pbr
 feature interface-vlan
 feature vn-segment-vlan-based
+feature lacp
+feature dhcp
+feature lldp
+feature bfd
 feature nv overlay
+feature ngoam
 
 no password strength-check
 username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
 username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
+username ndfc password 5 $5$JNOJPO$eW3yaPEPAGbVaMwb.arjSDT5ClEyLZ1Iqdh1URxW.33  role network-admin
+username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 
-fabric forwarding anycast-gateway-mac 0000.0000.bbbb
-ip pim rp-address 169.254.255.200 group-list 224.0.0.0/4
+fabric forwarding anycast-gateway-mac 0000.0000.aaaa
+ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
 vlan 1,100-101,501
 vlan 100
@@ -26,8 +35,18 @@ vlan 101
 vlan 501
   vn-segment 50001
 
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
+
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.21/24
+
 route-map TENANT1_OVERLAY_SUBNETS permit 10
   match tag 100
+
 vrf context TENANT1
   vni 50001
   ip pim ssm range 232.0.0.0/8
@@ -64,12 +83,12 @@ interface Vlan501
 interface nve1
   no shutdown
   host-reachability protocol bgp
-  source-interface loopback0
+  source-interface loopback1
   member vni 50001 associate-vrf
   member vni 100100
-    mcast-group 239.0.1.100
+    mcast-group 239.0.0.100
   member vni 100101
-    mcast-group 239.0.1.100
+    mcast-group 239.0.0.100
 
 interface Ethernet1/1
   description Link to spine-1
@@ -83,7 +102,7 @@ interface Ethernet1/1
   no shutdown
 
 interface Ethernet1/2
-  description Link to leaf-2
+  description Link to spine-2
   no switchport
   mtu 9216
   medium p2p
@@ -94,14 +113,14 @@ interface Ethernet1/2
   no shutdown
 
 interface Ethernet1/8
-  description to SRV2
+  description to SRV17
   switchport
   switchport access vlan 100
   spanning-tree port type edge
   no shutdown
 
 interface Ethernet1/9
-  description to SRV4
+  description to SRV19
   switchport
   switchport access vlan 101
   spanning-tree port type edge
@@ -114,29 +133,36 @@ interface Ethernet1/10 - 64
   shutdown
 
 interface loopback0
-  ip address 169.254.255.104/32
+  ip address 169.254.255.21/32
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
-icam monitor scale
+  no shutdown
+
+interface loopback1
+  description VTEP loopback interface
+  ip address 169.254.255.121/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
 
 cli alias name wr copy run start
 line console
   exec-timeout 0
-line vty
 
 router ospf UNDERLAY
-  router-id 169.254.255.104
-router bgp 65001
-  router-id 169.254.255.104
+  router-id 169.254.255.21
+
+router bgp 65002
+  router-id 169.254.255.21
   address-family l2vpn evpn
-  neighbor 169.254.255.101
-    remote-as 65001
+  neighbor 169.254.255.18
+    remote-as 65002
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 169.254.255.102
-    remote-as 65001
+  neighbor 169.254.255.19
+    remote-as 65002
     update-source loopback0
     address-family l2vpn evpn
       send-community
@@ -144,6 +170,9 @@ router bgp 65001
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+      maximum-paths 4
+      maximum-paths ibgp 4
+
 evpn
   vni 100100 l2
     rd auto
