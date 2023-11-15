@@ -37,6 +37,16 @@ vlan 101
 vlan 501
   vn-segment 50001
 
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.17/24
+  no shutdown
+
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
+
 route-map DIRECT-TO-BGP permit 10
   match tag 12
 route-map INTERNET-TO-TENANTS permit 10
@@ -57,7 +67,7 @@ interface Vlan501
 interface nve1
   no shutdown
   host-reachability protocol bgp
-  source-interface loopback0
+  source-interface loopback1
   multisite border-gateway interface loopback100
   member vni 50001 associate-vrf
   member vni 100100
@@ -96,6 +106,12 @@ interface loopback0
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
+interface loopback1
+  description VTEP loopback interface
+  ip address 169.254.255.111/32 tag 54321
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
 interface loopback100
   description Loopback for EVPN Border Gateway
   ip address 169.168.12.11/32 tag 12
@@ -111,7 +127,7 @@ router bgp 65001
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
   neighbor 169.168.12.111
-    remote-as 65001
+    remote-as 65002
     update-source loopback100
     ebgp-multihop 5
     peer-type fabric-external
@@ -129,11 +145,6 @@ router bgp 65001
     remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
-      send-community
-      send-community extended
-  neighbor 198.0.0.9
-    remote-as 651001
-    address-family ipv4 unicast
       send-community
       send-community extended
 

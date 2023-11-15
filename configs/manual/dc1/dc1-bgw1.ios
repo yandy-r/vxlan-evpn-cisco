@@ -39,10 +39,21 @@ vlan 501
 vlan 666
   vn-segment 100666
 
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.16/24
+  no shutdown
+
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
+
 route-map DIRECT-TO-BGP permit 10
   match tag 12
 route-map INTERNET-TO-TENANTS permit 10
   match tag 666
+
 vrf context INTERNET
   vni 100666
   rd auto
@@ -77,7 +88,7 @@ interface Vlan666
 interface nve1
   no shutdown
   host-reachability protocol bgp
-  source-interface loopback0
+  source-interface loopback1
   multisite border-gateway interface loopback100
   member vni 50001 associate-vrf
   member vni 100666 associate-vrf
@@ -135,11 +146,17 @@ interface Ethernet1/11
   mtu 9216
   vrf member INTERNET
   no ip redirects
-  ip address 169.168.0.14/30 tag 666
+  ip address 169.0.1.2/30 tag 666
   no shutdown
 
 interface loopback0
   ip address 169.254.255.10/32 tag 12
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface loopback1
+  description VTEP loopback interface
+  ip address 169.254.255.110/32 tag 54321
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
 
@@ -164,7 +181,7 @@ router bgp 65001
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
   neighbor 169.168.12.110
-    remote-as 65001
+    remote-as 65002
     update-source loopback100
     ebgp-multihop 5
     peer-type fabric-external
@@ -184,20 +201,10 @@ router bgp 65001
     address-family l2vpn evpn
       send-community
       send-community extended
-  neighbor 198.0.0.1
-    remote-as 651001
-    address-family ipv4 unicast
-      send-community
-      send-community extended
-  neighbor 198.1.0.2
-    remote-as 65001
-    address-family ipv4 unicast
-      send-community
-      send-community extended
   vrf INTERNET
     address-family ipv4 unicast
-    neighbor 169.168.0.13
-      remote-as 64000
+    neighbor 169.0.1.1
+      remote-as 64001
       address-family ipv4 unicast
         send-community
         send-community extended
