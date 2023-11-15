@@ -124,7 +124,7 @@ router bgp 65001
     redistribute direct route-map DIRECT-TO-BGP
   address-family l2vpn evpn
   neighbor 192.168.12.11
-    remote-as 65000
+    remote-as 65001
     update-source loopback100
     ebgp-multihop 5
     peer-type fabric-external

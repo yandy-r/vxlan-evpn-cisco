@@ -70,7 +70,7 @@ router bgp 651001
  !
  address-family ipv4 vrf LINK1
   redistribute connected
-  neighbor 198.0.0.2 remote-as 65000
+  neighbor 198.0.0.2 remote-as 65001
   neighbor 198.0.0.2 activate
   neighbor 198.0.0.6 remote-as 65001
   neighbor 198.0.0.6 activate
@@ -78,7 +78,7 @@ router bgp 651001
  !
  address-family ipv4 vrf LINK2
   redistribute connected
-  neighbor 198.0.0.10 remote-as 65000
+  neighbor 198.0.0.10 remote-as 65001
   neighbor 198.0.0.10 activate
   neighbor 198.0.0.14 remote-as 65001
   neighbor 198.0.0.14 activate

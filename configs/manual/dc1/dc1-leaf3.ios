@@ -139,17 +139,17 @@ line vty
 router ospf UNDERLAY
   router-id 169.254.255.5
 
-router bgp 65000
+router bgp 65001
   router-id 169.254.255.5
   address-family l2vpn evpn
   neighbor 169.254.255.1
-    remote-as 65000
+    remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
       send-community
       send-community extended
   neighbor 169.254.255.2
-    remote-as 65000
+    remote-as 65001
     update-source loopback0
     address-family l2vpn evpn
       send-community
