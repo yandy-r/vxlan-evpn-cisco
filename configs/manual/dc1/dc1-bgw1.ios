@@ -124,20 +124,37 @@ interface Ethernet1/2
   evpn multisite fabric-tracking
 
 interface Ethernet1/5
-  description Link to s2-border1
+  description Link to c8k-30
   no switchport
   mtu 9216
   no ip redirects
-  ip address 198.0.0.2/30
-  no shutdown
+  no ip address
+  shutdown
   evpn multisite dci-tracking
 
 interface Ethernet1/6
-  description to s2-bgw1-eth1/6
+  description to c8k-31
   no switchport
   mtu 9216
-  ip address 198.1.0.1/30
-  no shutdown
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/7
+  description Link to c8k-75
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/8
+  description to c8k-76
+  no switchport
+  mtu 9216
+  no ip address
+  shutdown
   evpn multisite dci-tracking
 
 interface Ethernet1/11
@@ -148,6 +165,15 @@ interface Ethernet1/11
   no ip redirects
   ip address 169.0.1.2/30 tag 666
   no shutdown
+
+interface Ethernet1/3 - 4
+  shutdown
+
+interface Ethernet1/9 - 10
+  shutdown
+
+interface Ethernet1/12 - 64
+  shutdown
 
 interface loopback0
   ip address 169.254.255.10/32 tag 12

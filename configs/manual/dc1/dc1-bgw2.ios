@@ -101,6 +101,65 @@ interface Ethernet1/2
   no shutdown
   evpn multisite fabric-tracking
 
+interface Ethernet1/5
+  description Link to c8k-31
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/6
+  description to c8k-39
+  no switchport
+  mtu 9216
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/7
+  description Link to c8k-76
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/8
+  description to c8k-75
+  no switchport
+  mtu 9216
+  no ip address
+  shutdown
+  evpn multisite dci-tracking
+
+interface Ethernet1/11
+  description to dc1-svc-fgt1: port1
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+
+interface Ethernet1/12
+  description to dc1-svc-fgt1: port2
+  no switchport
+  mtu 9216
+  no ip redirects
+  no ip address
+  shutdown
+
+interface Ethernet1/3 - 4
+  shutdown
+
+interface Ethernet1/9 - 10
+  shutdown
+
+interface Ethernet1/13 - 64
+  shutdown
+
 interface loopback0
   ip address 169.254.255.11/32 tag 12
   ip router ospf UNDERLAY area 0.0.0.0
