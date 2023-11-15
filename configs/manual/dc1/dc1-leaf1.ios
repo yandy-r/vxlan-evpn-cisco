@@ -28,7 +28,7 @@ no ip domain-lookup
 fabric forwarding anycast-gateway-mac 0000.0000.aaaa
 ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
-vlan 1,100-101,200,501-502
+vlan 1,100-101,200,501-502,3600
 vlan 100
   vn-segment 100100
 vlan 101
@@ -40,11 +40,6 @@ vlan 501
 vlan 502
   vn-segment 50002
 
-route-map TENANT1_OVERLAY_SUBNETS permit 10
-  match tag 100
-route-map TENANT2_OVERLAY_SUBNETS permit 10
-  match tag 200
-
 vrf context management
   ip name-server 10.25.0.51 10.25.0.52
   ip route 0.0.0.0/0 10.100.105.1
@@ -53,6 +48,20 @@ interface mgmt0
   no cdp enable
   vrf member management
   ip address 10.100.105.13/24
+
+vpc domain 1
+  peer-switch
+  peer-keepalive destination 169.254.255.5 source 169.254.255.3 vrf default
+  delay restore 150
+  peer-gateway
+  auto-recovery reload-delay 360
+  ipv6 nd synchronize
+  ip arp synchronize
+
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+route-map TENANT2_OVERLAY_SUBNETS permit 10
+  match tag 200
 
 vrf context TENANT1
   vni 50001
@@ -110,10 +119,33 @@ interface Vlan502
   vrf member TENANT2
   ip forward
 
+interface port-channel27
+  switchport access vlan 100
+  spanning-tree port type edge
+  spanning-tree bpduguard enable
+  vpc 27
+
+interface port-channel500
+  description "vpc-peer-link dc1-leaf1--dc1-leaf3"
+  switchport mode trunk
+  spanning-tree port type network
+  vpc peer-link
+
+interface Vlan3600
+  description VPC-Peer-Link SVI
+  no shutdown
+  mtu 9216
+  no ip redirects
+  ip address 169.254.254.0/31
+  no ipv6 redirects
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
 interface nve1
   no shutdown
   host-reachability protocol bgp
-  source-interface loopback0
+  source-interface loopback1
   member vni 50001 associate-vrf
   member vni 50002 associate-vrf
   member vni 100100
@@ -145,28 +177,40 @@ interface Ethernet1/2
   ip pim sparse-mode
   no shutdown
 
+interface Ethernet1/5
+  description "PO 500 (vpc-peer-link) member dc1-leaf1-Ethernet1/5 to dc1-leaf3-Ethernet1/5"
+  switchport mode trunk
+  channel-group 500 mode active
+  no shutdown
+
+interface Ethernet1/6
+  description "PO 500 (vpc-peer-link) member dc1-leaf1-Ethernet1/6 to dc1-leaf3-Ethernet1/6"
+  switchport mode trunk
+  channel-group 500 mode active
+  no shutdown
+
 interface Ethernet1/8
-  description to SRV1
+  description to SRV27
   switchport
   switchport access vlan 100
-  spanning-tree port type edge
+  channel-group 27 mode active
   no shutdown
 
 interface Ethernet1/9
-  description to SRV6
+  description to SRV33
   switchport
   switchport access vlan 200
   spanning-tree port type edge
   no shutdown
 
 interface Ethernet1/10
-  description to SRV3
+  description to SRV34
   switchport
   switchport access vlan 101
   spanning-tree port type edge
   no shutdown
 
-interface Ethernet1/3 - 7
+interface Ethernet1/3 - 4
   shutdown
 
 interface Ethernet1/11 - 64
@@ -176,6 +220,15 @@ interface loopback0
   ip address 169.254.255.3/32
   ip router ospf UNDERLAY area 0.0.0.0
   ip pim sparse-mode
+  no shutdown
+
+interface loopback1
+  description VTEP loopback interface
+  ip address 169.254.255.103/32
+  ip address 169.254.255.255/32 secondary
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
 
 cli alias name wr copy run start
 line console
@@ -202,9 +255,13 @@ router bgp 65001
   vrf TENANT1
     address-family ipv4 unicast
       redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+      maximum-paths 4
+      maximum-paths ibgp 4
   vrf TENANT2
     address-family ipv4 unicast
       redistribute direct route-map TENANT2_OVERLAY_SUBNETS
+      maximum-paths 4
+      maximum-paths ibgp 4
 evpn
   vni 100100 l2
     rd auto
