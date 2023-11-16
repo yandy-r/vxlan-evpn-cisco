@@ -1,0 +1,282 @@
+hostname dc1-leaf3
+
+cfs eth distribute
+nv overlay evpn
+feature nxapi
+feature ospf
+feature bgp
+feature pim
+feature pbr
+feature interface-vlan
+feature vn-segment-vlan-based
+feature lacp
+feature dhcp
+feature vpc
+feature lldp
+feature bfd
+feature nv overlay
+feature ngoam
+
+no password strength-check
+username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
+username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
+username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
+username ndfc password 5 $5$JNOJPO$eW3yaPEPAGbVaMwb.arjSDT5ClEyLZ1Iqdh1URxW.33  role network-admin
+username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
+no ip domain-lookup
+
+fabric forwarding anycast-gateway-mac 0000.0000.aaaa
+ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
+ip pim ssm range 232.0.0.0/8
+vlan 1,100-101,200,501-502,3600
+vlan 100
+  vn-segment 100100
+vlan 101
+  vn-segment 100101
+vlan 200
+  vn-segment 100200
+vlan 501
+  vn-segment 50001
+vlan 502
+  vn-segment 50002
+
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
+
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.15/24
+
+vpc domain 1
+  peer-switch
+  peer-keepalive destination 169.254.255.3 source 169.254.255.5 vrf default
+  delay restore 150
+  peer-gateway
+  auto-recovery reload-delay 360
+  ipv6 nd synchronize
+  ip arp synchronize
+
+route-map TENANT1_OVERLAY_SUBNETS permit 10
+  match tag 100
+route-map TENANT2_OVERLAY_SUBNETS permit 10
+  match tag 200
+
+vrf context TENANT1
+  vni 50001
+  ip pim ssm range 232.0.0.0/8
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+    route-target import 66:6
+    route-target import 66:6 evpn
+    route-target export 66:50001
+    route-target export 66:50001 evpn
+vrf context TENANT2
+  vni 50002
+  ip pim ssm range 232.0.0.0/8
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+    route-target import 66:6 evpn
+    route-target export 66:50002
+    route-target export 66:50002 evpn
+
+interface Vlan100
+  no shutdown
+  mtu 9216
+  vrf member TENANT1
+  ip address 169.1.100.1/24 tag 100
+  ip pim sparse-mode
+  fabric forwarding mode anycast-gateway
+
+interface Vlan101
+  no shutdown
+  mtu 9216
+  vrf member TENANT1
+  ip address 169.1.101.1/24 tag 100
+  ip pim sparse-mode
+  fabric forwarding mode anycast-gateway
+
+interface Vlan200
+  no shutdown
+  mtu 9216
+  vrf member TENANT2
+  ip address 169.1.200.1/24 tag 200
+  ip pim sparse-mode
+  fabric forwarding mode anycast-gateway
+
+interface Vlan501
+  no shutdown
+  vrf member TENANT1
+  ip forward
+
+interface Vlan502
+  no shutdown
+  vrf member TENANT2
+  ip forward
+
+interface port-channel27
+  switchport access vlan 100
+  spanning-tree port type edge
+  spanning-tree bpduguard enable
+  vpc 27
+
+interface port-channel500
+  description "vpc-peer-link dc1-leaf1--dc1-leaf3"
+  switchport mode trunk
+  spanning-tree port type network
+  vpc peer-link
+
+interface Vlan3600
+  description VPC-Peer-Link SVI
+  no shutdown
+  mtu 9216
+  no ip redirects
+  ip address 169.254.254.1/31
+  no ipv6 redirects
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback1
+  member vni 50001 associate-vrf
+  member vni 50002 associate-vrf
+  member vni 100100
+    mcast-group 239.0.0.100
+  member vni 100101
+    mcast-group 239.0.0.100
+  member vni 100200
+    mcast-group 239.0.0.200
+
+interface Ethernet1/1
+  description Link to spine-1
+  no switchport
+  mtu 9216
+  medium p2p
+  ip unnumbered loopback0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  description Link to leaf-2
+  no switchport
+  mtu 9216
+  medium p2p
+  ip unnumbered loopback0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/5
+  description "PO 500 (vpc-peer-link) member dc1-leaf1-Ethernet1/5 to dc1-leaf3-Ethernet1/5"
+  switchport mode trunk
+  channel-group 500 mode active
+  no shutdown
+
+interface Ethernet1/6
+  description "PO 500 (vpc-peer-link) member dc1-leaf1-Ethernet1/6 to dc1-leaf3-Ethernet1/6"
+  switchport mode trunk
+  channel-group 500 mode active
+  no shutdown
+
+interface Ethernet1/8
+  description to SRV27
+  switchport
+  switchport access vlan 100
+  channel-group 27 mode active
+  no shutdown
+
+interface Ethernet1/9
+  description to dc1-srv36
+  switchport access vlan 200
+  spanning-tree port type edge
+  no shutdown
+
+interface Ethernet1/10
+  description to dc1-srv37
+  switchport access vlan 101
+  spanning-tree port type edge
+  no shutdown
+
+interface Ethernet1/3 - 4
+  shutdown
+
+interface Ethernet1/7
+  shutdown
+
+interface Ethernet1/11 - 64
+  shutdown
+
+interface loopback0
+  ip address 169.254.255.5/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface loopback1
+  description VTEP loopback interface
+  ip address 169.254.255.105/32
+  ip address 169.254.255.255/32 secondary
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+cli alias name wr copy run start
+line console
+  exec-timeout 0
+line vty
+
+router ospf UNDERLAY
+  router-id 169.254.255.5
+
+router bgp 65001
+  router-id 169.254.255.5
+  address-family l2vpn evpn
+  neighbor 169.254.255.1
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  neighbor 169.254.255.2
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  vrf TENANT1
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT1_OVERLAY_SUBNETS
+      maximum-paths 4
+      maximum-paths ibgp 4
+  vrf TENANT2
+    address-family ipv4 unicast
+      redistribute direct route-map TENANT2_OVERLAY_SUBNETS
+      maximum-paths 4
+      maximum-paths ibgp 4
+evpn
+  vni 100100 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100101 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+  vni 100200 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+end
+wr

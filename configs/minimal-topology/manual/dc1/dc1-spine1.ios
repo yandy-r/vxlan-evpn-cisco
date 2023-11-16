@@ -1,0 +1,115 @@
+hostname dc1-spine1
+
+feature nxapi
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature lldp
+feature bfd
+feature nv overlay
+feature ngoam
+
+no password strength-check
+username admin password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
+username cisco password 5 $5$KGIJAJ$JfChz7hWMrqdG2MRwPtrbfc.ogPc3.Zqeh6ceHBwii7  role network-admin
+username cisco passphrase  lifetime 99999 warntime 14 gracetime 3
+username ndfc password 5 $5$MIKLNB$wvC/Pnp7zguCk1j9PeIvsVzsLf/Ifiw30DB3p1BTrt1  role network-admin
+username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
+no ip domain-lookup
+
+ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
+ip pim anycast-rp 169.254.255.100 169.254.255.1
+ip pim anycast-rp 169.254.255.100 169.254.255.2
+ip pim ssm range 232.0.0.0/8
+
+interface mgmt0
+  no cdp enable
+  vrf member management
+  ip address 10.100.105.11/24
+
+vrf context management
+  ip name-server 10.25.0.51 10.25.0.52
+  ip route 0.0.0.0/0 10.100.105.1
+
+interface Ethernet1/1
+  description Link to leaf-1
+  no switchport
+  mtu 9216
+  medium p2p
+  ip unnumbered loopback0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  interface Ethernet1/2
+  no switchport
+  mtu 9216
+  shutdown
+
+interface Ethernet1/3
+  description Link to leaf-3
+  no switchport
+  mtu 9216
+  medium p2p
+  ip unnumbered loopback0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/5
+  description Link to border1
+  no switchport
+  mtu 9216
+  medium p2p
+  ip unnumbered loopback0
+  ip ospf network point-to-point
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/4
+  shutdown
+
+interface Ethernet1/6
+ mtu 9216
+ shutdown
+
+interface Ethernet1/7 - 64
+  shutdown
+
+interface loopback0
+  ip address 169.254.255.1/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+interface loopback1
+  description Loopback for Anycast RP
+  ip address 169.254.255.100/32
+  ip router ospf UNDERLAY area 0.0.0.0
+  ip pim sparse-mode
+
+cli alias name wr copy run start
+line console
+  exec-timeout 0
+line vty
+
+router ospf UNDERLAY
+  router-id 169.254.255.1
+
+router bgp 65001
+  router-id 169.254.255.1
+  address-family l2vpn evpn
+  neighbor 169.254.255.0/24
+    remote-as 65001
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      route-reflector-client
+
+end
+wr
