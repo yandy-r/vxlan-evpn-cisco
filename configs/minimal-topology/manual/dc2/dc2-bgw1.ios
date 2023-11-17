@@ -125,6 +125,14 @@ interface Ethernet1/2
   no shutdown
   evpn multisite fabric-tracking
 
+interface Ethernet1/3
+  description to dc1-bgw1 eth1/3
+  no switchport
+  mtu 9216
+  ip address 169.13.26.2/30
+  no shutdown
+  evpn multisite dci-tracking
+
 interface Ethernet1/5
   description Link to c8k-32
   no switchport
@@ -213,6 +221,11 @@ router bgp 65002
   neighbor 169.26.78.2
     remote-as 65022
     update-source Ethernet1/8
+    address-family ipv4 unicast
+      next-hop-self
+  neighbor 169.13.26.1
+    remote-as 65001
+    update-source Ethernet1/3
     address-family ipv4 unicast
       next-hop-self
   address-family l2vpn evpn
