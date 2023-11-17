@@ -244,7 +244,7 @@ ip forward-protocol nd
 no ip http server
 ip http secure-server
 !
-ip route vrf mgmt 0.0.0.0 0.0.0.0 10.100.105.1
+ip route vrf mgmt 0.0.0.0 0.0.0.0 10.100.105.254
 ip ssh version 2
 !
 !

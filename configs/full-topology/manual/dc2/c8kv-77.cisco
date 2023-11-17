@@ -165,7 +165,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 10.100.105.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 10.100.105.254
 ip ssh version 2
 !
 !

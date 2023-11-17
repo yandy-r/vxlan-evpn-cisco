@@ -47,7 +47,7 @@ interface mgmt0
 
 vrf context management
   ip name-server 10.25.0.51 10.25.0.52
-  ip route 0.0.0.0/0 10.100.105.1
+  ip route 0.0.0.0/0 10.100.105.254
 
 route-map DIRECT-TO-BGP permit 10
   match tag 12

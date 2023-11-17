@@ -241,7 +241,7 @@ ip dhcp relay information option vpn
 ipv6 dhcp relay
 vrf context management
   ip name-server 10.25.0.51 10.25.0.52
-  ip route 0.0.0.0/0 10.100.105.1
+  ip route 0.0.0.0/0 10.100.105.254
 ngoam install acl
 
 nxapi http port 80
