@@ -251,7 +251,7 @@ interface GigabitEthernet15
 interface GigabitEthernet16
  description management
  vrf forwarding mgmt
- ip address 10.100.105.30 255.255.255.0
+ ip address 10.100.103.30 255.255.255.0
  negotiation auto
 !
 router bgp 65011
@@ -288,7 +288,7 @@ ip forward-protocol nd
 no ip http server
 ip http secure-server
 !
-ip route vrf mgmt 0.0.0.0 0.0.0.0 10.100.105.254
+ip route vrf mgmt 0.0.0.0 0.0.0.0 10.100.103.254
 ip ssh version 2
 !
 !

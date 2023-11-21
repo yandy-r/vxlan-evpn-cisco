@@ -1,6 +1,6 @@
 ---
 dc1-spine1:
-  hostname: 10.100.105.11
+  hostname: 10.100.103.11
   port: 22
   platform: nxos
   groups:
@@ -13,7 +13,7 @@ dc1-spine1:
     role: spine
     type: nexus
 dc1-spine2:
-  hostname: 10.100.105.12
+  hostname: 10.100.103.12
   port: 22
   platform: nxos
   groups:
@@ -26,7 +26,7 @@ dc1-spine2:
     role: spine
     type: nexus
 dc1-leaf1:
-  hostname: 10.100.105.13
+  hostname: 10.100.103.13
   port: 22
   platform: nxos
   groups:
@@ -39,7 +39,7 @@ dc1-leaf1:
     role: leaf
     type: nexus
 dc1-leaf2:
-  hostname: 10.100.105.14
+  hostname: 10.100.103.14
   port: 22
   platform: nxos
   groups:
@@ -52,7 +52,7 @@ dc1-leaf2:
     role: leaf
     type: nexus
 dc1-leaf3:
-  hostname: 10.100.105.15
+  hostname: 10.100.103.15
   port: 22
   platform: nxos
   groups:

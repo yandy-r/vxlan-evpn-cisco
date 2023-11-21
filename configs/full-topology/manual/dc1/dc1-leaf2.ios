@@ -41,12 +41,12 @@ vlan 502
 
 vrf context management
   ip name-server 10.25.0.51 10.25.0.52
-  ip route 0.0.0.0/0 10.100.105.254
+  ip route 0.0.0.0/0 10.100.103.254
 
 interface mgmt0
   no cdp enable
   vrf member management
-  ip address 10.100.105.14/24
+  ip address 10.100.103.14/24
 
 route-map TENANT1_OVERLAY_SUBNETS permit 10
   match tag 100

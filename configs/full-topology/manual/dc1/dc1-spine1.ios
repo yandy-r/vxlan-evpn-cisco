@@ -26,11 +26,11 @@ ip pim ssm range 232.0.0.0/8
 interface mgmt0
   no cdp enable
   vrf member management
-  ip address 10.100.105.11/24
+  ip address 10.100.103.11/24
 
 vrf context management
   ip name-server 10.25.0.51 10.25.0.52
-  ip route 0.0.0.0/0 10.100.105.254
+  ip route 0.0.0.0/0 10.100.103.254
 
 interface Ethernet1/1
   description Link to leaf-1

@@ -49,7 +49,7 @@ vlan 1
 
 vrf context management
   ip name-server 10.25.0.51 10.25.0.52
-  ip route 0.0.0.0/0 10.100.105.254
+  ip route 0.0.0.0/0 10.100.103.254
 ngoam install acl
 
 nxapi http port 80
@@ -349,7 +349,7 @@ interface Ethernet1/64
 interface mgmt0
   no cdp enable
   vrf member management
-  ip address 10.100.105.12/24
+  ip address 10.100.103.12/24
 
 interface loopback0
   description Routing loopback interface

@@ -138,7 +138,7 @@ interface GigabitEthernet3
 interface GigabitEthernet16
  description management
  vrf forwarding Mgmt-vrf
- ip address 10.100.105.76 255.255.255.0
+ ip address 10.100.103.76 255.255.255.0
  negotiation auto
  no shutdown
 !
@@ -166,7 +166,7 @@ ip forward-protocol nd
 no ip http server
 ip http secure-server
 !
-ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.105.254
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.103.254
 ip ssh version 2
 !
 !

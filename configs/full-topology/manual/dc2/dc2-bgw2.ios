@@ -42,12 +42,12 @@ vlan 666
 interface mgmt0
   no cdp enable
   vrf member management
-  ip address 10.100.105.23/24
+  ip address 10.100.103.23/24
   no shutdown
 
 vrf context management
   ip name-server 10.25.0.51 10.25.0.52
-  ip route 0.0.0.0/0 10.100.105.254
+  ip route 0.0.0.0/0 10.100.103.254
 
 route-map DIRECT-TO-BGP permit 10
   match tag 12
