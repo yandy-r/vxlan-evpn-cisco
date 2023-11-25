@@ -257,14 +257,3 @@ router bgp 65001
       address-family ipv4 unicast
         send-community
         send-community extended
-evpn
-  vni 100100 l2
-    rd auto
-    route-target import auto
-    route-target export auto
-  vni 100101 l2
-    rd auto
-    route-target import auto
-    route-target export auto
-    exit
-  exit
