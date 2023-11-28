@@ -135,7 +135,7 @@ config vpn ssl settings
     set servercert "Fortinet_Factory"
     set tunnel-ip-pools "SSLVPN_TUNNEL_ADDR1"
     set tunnel-ipv6-pools "SSLVPN_TUNNEL_IPv6_ADDR1"
-    set source-interface "INTERNET"
+    set source-interface "internet2" "internet1"
     set source-address "all"
     set source-address6 "all"
     set default-portal "full-access"
