@@ -44,7 +44,7 @@ config system interface
     next
     edit "port2"
         set vdom "root"
-        set ip 169.0.2.1 255.255.255.252
+        set ip 169.0.1.1 255.255.255.252
         set allowaccess ping
         set type physical
         set alias "inside"
@@ -54,6 +54,8 @@ config system interface
         config ipv6
             set ip6-allowaccess ping
         end
+        set mtu-override enable
+        set mtu 9000
     next
     edit "port3"
         set vdom "root"

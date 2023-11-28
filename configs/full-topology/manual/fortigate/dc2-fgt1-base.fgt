@@ -54,6 +54,8 @@ config system interface
         config ipv6
             set ip6-allowaccess ping
         end
+        set mtu-override enable
+        set mtu 9000
     next
     edit "port3"
         set vdom "root"
