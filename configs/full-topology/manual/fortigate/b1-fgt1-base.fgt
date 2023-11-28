@@ -1,0 +1,561 @@
+config system global
+    set admin-scp enable
+    set admin-sport 8443
+    set admintimeout 480
+    set alias "b1-fgt1"
+    set gui-app-detection-sdwan enable
+    set gui-auto-upgrade-setup-warning disable
+    set gui-ipv6 enable
+    set gui-local-out enable
+    set hostname "b1-fgt1"
+    set timezone 12
+end
+config system settings
+    set gui-dns-database enable
+    set gui-load-balance enable
+    set gui-local-in-policy enable
+    set gui-sslvpn enable
+    set gui-dlp-profile enable
+    set gui-advanced-policy enable
+    set gui-multiple-interface-policy enable
+    set gui-policy-disclaimer enable
+    set gui-dynamic-device-os-id enable
+end
+config system interface
+    edit "port1"
+        set vdom "root"
+        unset mode
+        unset ip
+        set allowaccess ping
+        set type physical
+        set alias "public1"
+        set lldp-reception enable
+        set role wan
+    next
+    edit "internet1"
+        set vdom "root"
+        set ip 10.100.109.51 255.255.255.0
+        set allowaccess ping
+        set alias "internet1"
+        set device-identification enable
+        set role wan
+        set interface "port1"
+        set vlanid 1109
+    next
+    edit "port2"
+        set vdom "root"
+        set ip 169.26.0.1 255.255.255.252
+        set allowaccess ping
+        set type physical
+        set alias "inside"
+        set device-identification enable
+        set lldp-transmission enable
+        set role lan
+        config ipv6
+            set ip6-allowaccess ping
+        end
+    next
+    edit "port3"
+        set vdom "root"
+        unset mode
+        unset ip
+        set allowaccess ping
+        set type physical
+        set alias "public2"
+        set lldp-reception enable
+        set role wan
+    next
+    edit "internet2"
+        set vdom "root"
+        set ip 10.100.110.51 255.255.255.0
+        set allowaccess ping
+        set alias "internet2"
+        set device-identification enable
+        set role wan
+        set interface "port3"
+        set vlanid 1110
+    next
+    edit "port8"
+        set vdom "root"
+        set allowaccess ping https ssh http fgfm
+        set type physical
+        set lldp-transmission enable
+    next
+    edit "mgmt"
+        set vdom "root"
+        set ip 10.100.102.51 255.255.255.0
+        set allowaccess ping https ssh snmp http fgfm
+        set alias "mgmt"
+        set device-identification enable
+        set role lan
+        set interface "port8"
+        set vlanid 1102
+    next
+    edit "lo0"
+        set vdom "root"
+        set ip 169.255.255.51 255.255.255.255
+        set allowaccess ping ssh
+        set type loopback
+        set alias "lo0"
+        set role lan
+    next
+end
+config system zone
+    edit "INTERNAL"
+        set intrazone allow
+        set interface "port2"
+    next
+end
+config router static
+    edit 1
+        set gateway 10.100.109.1
+        set device "internet1"
+    next
+    edit 2
+        set gateway 10.100.110.1
+        set device "internet2"
+    next
+    edit 10
+        set dst 10.0.0.0 255.0.0.0
+        set gateway 10.100.102.1
+        set device "mgmt"
+    next
+    edit 11
+        set dst 172.16.0.0 255.240.0.0
+        set gateway 10.100.102.1
+        set device "mgmt"
+    next
+    edit 12
+        set dst 192.168.0.0 255.255.0.0
+        set gateway 10.100.102.1
+        set device "mgmt"
+    next
+end
+config vpn ssl settings
+    set servercert "Fortinet_Factory"
+    set tunnel-ip-pools "SSLVPN_TUNNEL_ADDR1"
+    set tunnel-ipv6-pools "SSLVPN_TUNNEL_IPv6_ADDR1"
+    set source-interface "INTERNET"
+    set source-address "all"
+    set source-address6 "all"
+    set default-portal "full-access"
+    set port 10443
+end
+config vpn ipsec phase1-interface
+    edit "hub1-vpn1"
+        set interface "internet1"
+        set ike-version 2
+        set peertype any
+        set net-device enable
+        set mode-cfg enable
+        set proposal aes256-sha256
+        set add-route disable
+        set comments "VPN: hub1-vpn1"
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set auto-discovery-shortcuts dependent
+        set network-overlay enable
+        set network-id 1
+        set remote-gw 10.100.109.31
+        set psksecret ENC yVgcpR9aW4B7dDEbvByHeQrZ+Nn04oSpo9Rjd7nJto8KD/x5eSdKpv7lbBkW/LclLkmxoVb0ap1uQGoL0sX0J0JgJy6bAT7IyryoATtYUILa9fRcZSh9SRwG5HHwSRh3l+ZChVufq7pPAUz+NZAMaFi12KsOGZepPLonnPyyG5TSvlPEcBFhW9gvFGvyZFDGuyiVjg==
+    next
+    edit "hub2-vpn1"
+        set interface "internet1"
+        set ike-version 2
+        set peertype any
+        set net-device enable
+        set mode-cfg enable
+        set proposal aes256-sha256
+        set add-route disable
+        set comments "VPN: hub2-vpn1"
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set auto-discovery-shortcuts dependent
+        set network-overlay enable
+        set network-id 2
+        set remote-gw 10.100.109.41
+        set psksecret ENC /OnUb4+o8WaZyMpoUA1rdYMNJOns6HxsGq7Qu+gj8ojt+qAgKQIKrvq1njtjOhLk4KVBDgBK3aV/48xedPvjHDOpuIFTRQQrjuqo1aFWT6bD60FwYCUDL9MT5+7+eV389g4k6lLT2DTQRgvz0+bjTonwJ8COwCuCzv4qv3iiKty7Kenf1ZR6oqZjnPJMNclz6Jn2mw==
+    next
+    edit "hub1-vpn2"
+        set interface "internet2"
+        set ike-version 2
+        set peertype any
+        set net-device enable
+        set mode-cfg enable
+        set proposal aes256-sha256
+        set add-route disable
+        set comments "VPN: hub1-vpn2"
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set auto-discovery-shortcuts dependent
+        set network-overlay enable
+        set network-id 3
+        set remote-gw 10.100.110.31
+        set psksecret ENC 608cfwuuTsHrzUjpUmiQU0BCeZbgypTT0JTY64nYzn8FB7wlgviCHFQMRSy4qsBWrovyig0n656MUCQ3ywMkp4r/23nE6xIPw2BoRqyxUUVepuhXFedOqeL1XCL9fT07xXWXJBeOITXL9v5OydeO9BYFF1tc+d6bG1Mct+WR6rfBZDUFe0mL1pJbCh523rq6KkJnew==
+    next
+    edit "hub2-vpn2"
+        set interface "internet2"
+        set ike-version 2
+        set peertype any
+        set net-device enable
+        set mode-cfg enable
+        set proposal aes256-sha256
+        set add-route disable
+        set comments "VPN: hub2-vpn2"
+        set idle-timeout enable
+        set auto-discovery-receiver enable
+        set auto-discovery-shortcuts dependent
+        set network-overlay enable
+        set network-id 4
+        set remote-gw 10.100.110.41
+        set psksecret ENC /wRZGLs3+aXAlGzfuZsfDDMnQU8uneG8a8n/AurAxiF8Kcmjjvj126OcUQnkAos9L9ID/dfdsQGiJSYivR0N+kmEv/haZwoiUU219H+ucps+HtJZatTfUtXXT4MGibhQZaKVq3FI9Sms4d8XPw/1pa67Bk4f7FmpOA3jJirT5FQjJzlAkllJizetgoVwCku9PUdygQ==
+    next
+end
+config vpn ipsec phase2-interface
+    edit "hub1-vpn1"
+        set phase1name "hub1-vpn1"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+        set comments "VPN: hub1-vpn1"
+    next
+    edit "hub1-vpn2"
+        set phase1name "hub1-vpn2"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+        set comments "VPN: hub1-vpn2"
+    next
+    edit "hub2-vpn1"
+        set phase1name "hub2-vpn1"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+        set comments "VPN: hub2-vpn1"
+    next
+    edit "hub2-vpn2"
+        set phase1name "hub2-vpn2"
+        set proposal aes256-sha256
+        set auto-negotiate enable
+        set comments "VPN: hub2-vpn2"
+    next
+end
+config system interface
+    edit "hub1-vpn1"
+        set vdom "root"
+        set allowaccess ping
+        set type tunnel
+        set interface "internet1"
+        set mtu-override enable
+        set mtu 1360
+    next
+    edit "hub2-vpn1"
+        set vdom "root"
+        set allowaccess ping
+        set type tunnel
+        set interface "internet1"
+        set mtu-override enable
+        set mtu 1360
+    next
+    edit "hub1-vpn2"
+        set vdom "root"
+        set allowaccess ping
+        set type tunnel
+        set interface "internet2"
+        set mtu-override enable
+        set mtu 1360
+    next
+    edit "hub2-vpn2"
+        set vdom "root"
+        set allowaccess ping
+        set type tunnel
+        set interface "internet2"
+        set mtu-override enable
+        set mtu 1360
+    next
+end
+config system sdwan
+    set status enable
+    config zone
+        edit "virtual-wan-link"
+        next
+        edit "Hub1"
+        next
+        edit "Hub2"
+        next
+        edit "sdwan1"
+        next
+        edit "sdwan2"
+        next
+    end
+    config members
+        edit 3
+            set interface "hub1-vpn1"
+            set zone "Hub1"
+        next
+        edit 4
+            set interface "hub2-vpn1"
+            set zone "Hub2"
+        next
+        edit 5
+            set interface "hub1-vpn2"
+            set zone "Hub1"
+        next
+        edit 6
+            set interface "hub2-vpn2"
+            set zone "Hub2"
+        next
+        edit 1
+            set interface "internet1"
+            set zone "sdwan1"
+        next
+        edit 2
+            set interface "internet2"
+            set zone "sdwan2"
+        next
+    end
+    config health-check
+        edit "Default_DNS"
+            set system-dns enable
+            set interval 1000
+            set probe-timeout 1000
+            set recoverytime 10
+            config sla
+                edit 1
+                    set latency-threshold 250
+                    set jitter-threshold 50
+                    set packetloss-threshold 5
+                next
+            end
+        next
+        edit "Default_Office_365"
+            set server "www.office.com"
+            set protocol http
+            set interval 1000
+            set probe-timeout 1000
+            set recoverytime 10
+            config sla
+                edit 1
+                    set latency-threshold 250
+                    set jitter-threshold 50
+                    set packetloss-threshold 5
+                next
+            end
+        next
+        edit "Default_Gmail"
+            set server "gmail.com"
+            set interval 1000
+            set probe-timeout 1000
+            set recoverytime 10
+            config sla
+                edit 1
+                    set latency-threshold 250
+                    set jitter-threshold 50
+                    set packetloss-threshold 2
+                next
+            end
+        next
+        edit "Default_Google Search"
+            set server "www.google.com"
+            set protocol http
+            set interval 1000
+            set probe-timeout 1000
+            set recoverytime 10
+            config sla
+                edit 1
+                    set latency-threshold 250
+                    set jitter-threshold 50
+                    set packetloss-threshold 5
+                next
+            end
+        next
+        edit "Default_FortiGuard"
+            set server "fortiguard.com"
+            set protocol http
+            set interval 1000
+            set probe-timeout 1000
+            set recoverytime 10
+            config sla
+                edit 1
+                    set latency-threshold 250
+                    set jitter-threshold 50
+                    set packetloss-threshold 5
+                next
+            end
+        next
+        edit "Default_AWS"
+            set server "aws.amazon.com"
+            set protocol http
+            set interval 1000
+            set probe-timeout 1000
+            set recoverytime 10
+            config sla
+                edit 1
+                    set latency-threshold 250
+                    set jitter-threshold 50
+                    set packetloss-threshold 5
+                next
+            end
+        next
+    end
+end
+config firewall address
+    edit "port2 address"
+        set type interface-subnet
+        set subnet 169.26.0.0 255.255.255.252
+        set interface "port2"
+    next
+    edit "mgmt address"
+        set type interface-subnet
+        set subnet 10.100.102.0 255.255.255.0
+        set interface "mgmt"
+    next
+    edit "lo0 address"
+        set type interface-subnet
+        set subnet 169.255.255.51 255.255.255.255
+        set interface "lo0"
+    next
+    edit "ADVPN-SUBNET"
+        set subnet 169.100.254.0 255.255.254.0
+    next
+    edit "BRANCH1-SUBNETS"
+        set subnet 169.26.0.0 255.255.0.0
+    next
+    edit "BRANCH2-SUBNETS"
+        set subnet 169.27.0.0 255.255.0.0
+    next
+    edit "CORE-INFRA-169.0.0.0"
+        set subnet 169.0.0.0 255.255.0.0
+    next
+    edit "DC-SERVERS-169.1.0.0"
+        set subnet 169.1.0.0 255.255.0.0
+    next
+    edit "DC1-CORE-INFRA-169.0.0.0"
+        set subnet 169.0.0.0 255.255.252.0
+    next
+    edit "DC2-CORE-INFRA-169.0.4.0"
+        set subnet 169.0.4.0 255.255.252.0
+    next
+    edit "LOOPBACKS"
+        set subnet 169.255.254.0 255.255.254.0
+    next
+end
+config firewall addrgrp
+    edit "BRANCH-SUBNETS"
+        set member "BRANCH2-SUBNETS" "BRANCH1-SUBNETS"
+    next
+    edit "HUB-SUBNETS"
+        set member "DC2-CORE-INFRA-169.0.4.0" "DC1-CORE-INFRA-169.0.0.0" "DC-SERVERS-169.1.0.0" "CORE-INFRA-169.0.0.0"
+    next
+end
+config firewall policy
+    edit 1
+        set name "ADVPN-IN"
+        set srcintf "Hub1" "Hub2"
+        set dstintf "INTERNAL"
+        set action accept
+        set srcaddr "ADVPN-SUBNET" "LOOPBACKS" "BRANCH-SUBNETS" "HUB-SUBNETS"
+        set dstaddr "BRANCH-SUBNETS"
+        set schedule "always"
+        set service "ALL"
+        set logtraffic all
+    next
+    edit 2
+        set name "ADVPN-IN-LOOPBACKS"
+        set srcintf "Hub1" "Hub2"
+        set dstintf "lo0"
+        set action accept
+        set srcaddr "ADVPN-SUBNET" "HUB-SUBNETS" "LOOPBACKS"
+        set dstaddr "LOOPBACKS"
+        set schedule "always"
+        set service "ALL"
+        set logtraffic all
+    next
+    edit 3
+        set name "BRANCH-TO-WAN"
+        set srcintf "INTERNAL"
+        set dstintf "Hub1" "Hub2"
+        set action accept
+        set srcaddr "BRANCH-SUBNETS"
+        set dstaddr "ADVPN-SUBNET" "BRANCH-SUBNETS" "HUB-SUBNETS" "LOOPBACKS"
+        set schedule "always"
+        set service "ALL"
+        set logtraffic all
+    next
+    edit 4
+        set name "BRANCH-TO-OUT"
+        set srcintf "INTERNAL"
+        set dstintf "sdwan1" "sdwan2"
+        set action accept
+        set srcaddr "BRANCH-SUBNETS" "LOOPBACKS"
+        set dstaddr "all"
+        set schedule "always"
+        set service "ALL"
+        set logtraffic all
+        set nat enable
+    next
+end
+config router bgp
+    set as 64001
+    set router-id 169.255.255.51
+    set ibgp-multipath enable
+    set additional-path enable
+    set recursive-next-hop enable
+    set graceful-restart enable
+    set additional-path-select 255
+    config neighbor
+        edit "169.100.254.1"
+            set advertisement-interval 1
+            set capability-graceful-restart enable
+            set link-down-failover enable
+            set next-hop-self enable
+            set soft-reconfiguration enable
+            set description "HUB1-VPN1"
+            set remote-as 64001
+            set connect-timer 10
+            set additional-path receive
+        next
+        edit "169.100.255.1"
+            set advertisement-interval 1
+            set capability-graceful-restart enable
+            set link-down-failover enable
+            set next-hop-self enable
+            set soft-reconfiguration enable
+            set description "HUB2-VPN1"
+            set remote-as 64001
+            set connect-timer 10
+            set additional-path receive
+        next
+        edit "169.101.254.1"
+            set advertisement-interval 1
+            set capability-graceful-restart enable
+            set link-down-failover enable
+            set next-hop-self enable
+            set soft-reconfiguration enable
+            set description "HUB1-VPN1"
+            set remote-as 64001
+            set connect-timer 10
+            set additional-path receive
+        next
+        edit "169.101.255.1"
+            set advertisement-interval 1
+            set capability-graceful-restart enable
+            set link-down-failover enable
+            set next-hop-self enable
+            set soft-reconfiguration enable
+            set description "HUB2-VPN1"
+            set remote-as 64001
+            set connect-timer 10
+            set additional-path receive
+        next
+        edit "169.26.0.2"
+            set capability-graceful-restart enable
+            set capability-graceful-restart6 enable
+            set capability-default-originate enable
+            set capability-default-originate6 enable
+            set soft-reconfiguration enable
+            set soft-reconfiguration6 enable
+            set remote-as 65101
+        next
+    end
+    config redistribute "connected"
+        set status enable
+    end
+end
