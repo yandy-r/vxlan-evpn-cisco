@@ -1,0 +1,256 @@
+!
+! Last configuration change at 18:16:23 UTC Wed Jul 19 2023
+!
+version 17.10
+service timestamps debug datetime msec
+service timestamps log datetime msec
+! Call-home is enabled by Smart-Licensing.
+service call-home
+platform punt-keepalive disable-kernel-core
+!
+hostname c9kv-53
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no aaa new-model
+switch 1 provision c9kv-uadp-8p
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name netlab.local
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2874884994
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2874884994
+ revocation-check none
+ rsakeypair TP-self-signed-2874884994
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+!
+!
+crypto pki certificate chain TP-self-signed-2874884994
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32383734 38383439 3934301E 170D3233 30373139 31383132 
+  30365A17 0D333330 37313831 38313230 365A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 38373438 
+  38343939 34308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 01009611 7E90E985 BF1449AA F9EE9E29 B8FBECD5 09F97AE7 B94882D8 
+  6EA7EBDA 876AFB87 EC246B31 7621D992 8784DE20 017C0B64 07A13BF5 7C224DF2 
+  30AFBD12 88491F1A 35FC7FA7 2FB637A5 8B5AF5AA 5F251247 D0AB7CA4 C1839EA5 
+  DC9CB908 91A9790D 237A25EB 58DD53BC F717DFCF E0B7A601 C3E95EBB 5112C829 
+  E667B7F4 77B43375 C028466B 24183D0C 792E35B4 48CC74EA 13FAAE9F 5B74B59D 
+  CDD80F55 65CAE782 E29BF2F7 93A2DD8E 00B9D9BF 496F2226 73114EC3 8B599D59 
+  4A003C84 714C93F1 35A4FD22 B2A4DBAF 69741171 B38E8CCD B2B3D323 5E282EF8 
+  20CF7E54 34AB7FA0 B7C7DF17 D51A23D3 CDB5A2F9 94FAF3DE C08FFFAC 95D39599 
+  60EADEB8 04330203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 
+  301F0603 551D2304 18301680 1474E739 E45C54AA 282849A9 7245FF0E 121E31C5 
+  97301D06 03551D0E 04160414 74E739E4 5C54AA28 2849A972 45FF0E12 1E31C597 
+  300D0609 2A864886 F70D0101 05050003 82010100 8984BD32 E132C291 F2BA631D 
+  3E905611 B1F10679 90EC42CB BDE5147B 9D003804 CCDF01EB A1A8E1F9 311BF2D9 
+  43A03CB5 E1C2E680 778DD74F F9572009 DAB5171B AB8AA70A CCF98333 EEF59F31 
+  2AA3E11A 732E1C58 B8B595A2 0CBAAFEF B8C44F46 B1647FC3 CB64F82A 9D0F78B8 
+  A35B3CC6 8B9AEEE0 CAB06EC3 D530A408 D3D7AE12 96FD57E2 796B6AD5 6732A2B7 
+  6734C8B0 3DD9E519 F1F8C7B8 3B5F6FAF D89AAB60 FC6EF8FF 6C5A36D9 F3E4DD96 
+  7AE68A44 DB1AB5DA 50EC4C4A A2CF5901 1BE36589 5915C700 3141CFF5 818B0A26 
+  CF794617 D07C4A15 1887C060 246CB420 891ED204 C9F0839B D8295239 F670E573 
+  E9ED9198 D8950992 85B1A4B7 802A6A26 56754B4A
+  quit
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+  quit
+!
+memory free low-watermark processor 75927
+!
+diagnostic bootup level minimal
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+!
+enable secret 9 $9$1itgWBGiKaL7SU$9euASZk6GRFVoNzV9KlQpMLsGpiSQHSR5pI2BtA0ZCg
+!
+username admin privilege 15 secret cisco
+username cisco privilege 15 secret cisco
+username ndfc privilege 15 secret C1sco123
+!
+!
+!
+netconf-yang
+restconf
+!
+!
+!
+!
+!
+!
+!
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+class-map match-any system-cpp-default
+  description EWLC control, EWLC data, Inter FED 
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, High Rate App, Exception, EGR Exception, NFL SAMPLED DATA, RPF Failed
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+  description Routing control and Low Latency
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+class-map match-any system-cpp-police-dhcp-snooping
+  description DHCP snooping
+class-map match-any system-cpp-police-system-critical
+  description System Critical and Gold Pkt
+!
+policy-map system-cpp-policy
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip address 10.100.103.53 255.255.255.0
+ negotiation auto
+ no shutdown
+!
+interface GigabitEthernet1/0/1
+!
+interface GigabitEthernet1/0/2
+!
+interface GigabitEthernet1/0/3
+!
+interface GigabitEthernet1/0/4
+!
+interface GigabitEthernet1/0/5
+!
+interface GigabitEthernet1/0/6
+!
+interface GigabitEthernet1/0/7
+!
+interface GigabitEthernet1/0/8
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+ip forward-protocol nd
+ip http server
+ip http secure-server
+ip http authentication local
+license boot level network-advantage addon dna-advantage
+!
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.103.1
+ip ssh bulk-mode 131072
+!
+!
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input ssh
+line vty 5 15
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input ssh
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+!
+!
+!
+!
+!
+end

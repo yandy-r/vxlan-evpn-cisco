@@ -1,0 +1,466 @@
+!
+! Last configuration change at 12:45:43 UTC Tue Nov 28 2023
+!
+version 17.11
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service call-home
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname bb-rtr68
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition CUSTOMER-1
+ rd 1001:1001
+ !
+ address-family ipv4
+  route-target export 100:100
+  route-target export 100:200
+  route-target import 100:100
+  route-target import 100:200
+ exit-address-family
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name netlab.local
+!
+!
+!
+login on-success log
+!
+!
+subscriber templating
+!
+! 
+! 
+! 
+! 
+!
+mpls ldp graceful-restart
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+ hash sha256
+!
+crypto pki trustpoint TP-self-signed-2458274130
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2458274130
+ revocation-check none
+ rsakeypair TP-self-signed-2458274130
+ hash sha256
+!
+!
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+  	quit
+crypto pki certificate chain TP-self-signed-2458274130
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  31312F30 2D060355 04030C26 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32343538 32373431 3330301E 170D3233 31313238 31323237 
+  31355A17 0D333331 31323731 32323731 355A3031 312F302D 06035504 030C2649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D32 34353832 
+  37343133 30308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 0100B09D 06B8C392 C26D5B48 25B6452A C0F4751E 088BBCF3 843ED5E2 
+  5D237C73 88A24071 C38E4848 0B091E81 63F116C3 3F13E682 0E1F5A22 E66B8E26 
+  8F150F89 B298B50F 93CC75E7 5F7CFEE0 38BB5FD7 EDA178E0 1CC886B9 E17ED1F8 
+  4F8D2071 C9E36EBE 67649D8E 43D4F0D7 2147D525 1B54464E 5D8CFF52 38EE93A6 
+  F162DB1A 77A447D7 07A95D7F F6357474 592D67B9 CCF2CDCD 9BB1AAF2 50D092DA 
+  5A74A972 15C6947F EEC173C1 6FC79519 3B74E500 8763BC78 1AF5C999 BF0A018F 
+  80E06FFD D167ACF5 24E7749F 248DF77D 99CBC442 7E7D5ED9 6E2BAFE0 C85671B7 
+  3708F1FE 58E8E359 AC7D630B D11E1121 579B894D 87F40807 998C861B 6C074E17 
+  5FE044C4 18F10203 010001A3 53305130 1D060355 1D0E0416 0414DBED 4648B446 
+  59A05BC9 8C3CDDFE 2F7CE4C2 E681301F 0603551D 23041830 168014DB ED4648B4 
+  4659A05B C98C3CDD FE2F7CE4 C2E68130 0F060355 1D130101 FF040530 030101FF 
+  300D0609 2A864886 F70D0101 0B050003 82010100 83C83B7C 284FD4A1 06385C28 
+  DCC165E1 50AE8120 B207F44B 360C2850 C021D3B2 FB8B6D3B BB2C4320 9EA075C1 
+  B8A74E14 BA91E884 622D6B88 A081FFB8 200A4DC4 A475941C A600FB29 AB7136D4 
+  2B8BD5C3 90774D3D C5D5AF75 00D82233 E5BF7E5A 6F114BFF 0366CC2A DE2EB378 
+  00E181E6 900CA1F7 75106569 8C243807 D9E0C1FA 810C3F8D 531F7258 67FAD304 
+  0E4916BE 22BE0126 32CAB5A8 03B4BDE2 07653D14 FC037E9E D426191A 3699F94B 
+  FEB0A518 4983E747 B00D0783 E737287B BCF92554 E5A26FC7 77DC44C9 915EAB70 
+  91358411 0DF3887F 4EC853E1 8858A23B 174E2792 C466B4C3 75506489 7007C1D6 
+  85CD1430 DF474C2B C4D5EA9E 03738AF3 BC0D87D0
+  	quit
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid C8000V sn 9T39EVCPUIU
+license boot level network-advantage addon dna-advantage
+memory free low-watermark processor 70586
+diagnostic bootup level minimal
+!
+!
+spanning-tree extend system-id
+!
+enable secret 9 $9$QsjTs5kKTgAzxk$UOP9NcaRqZTKCLWtlSk0dB/rzvyjeyrGhGQVCVW0gqo
+!
+username admin privilege 15 secret 9 $9$9vK/PdWOVJ1ISU$cr6YfkxDVxeZGD24H6ZFlQEn2IXFnif2nZMZoQYMCG2
+username cisco privilege 15 secret 9 $9$/1En37eB.Sy0Ak$DHOHJbwJwWXHyS2ZFFG1cuHCUV.1Bhig5qo4B5Bp7Cw
+username ndfc privilege 15 secret 9 $9$WSVkcCc7sVGBKE$heAlGFrwfW.Wve5m/Mht7xGdg2iGAsOgRZfIFTNNqRY
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ ip address 169.255.250.68 255.255.255.255
+ ip ospf 1 area 0.0.0.0
+!
+interface GigabitEthernet1
+ mtu 9000
+ ip address 169.0.0.30 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf network point-to-point
+ ip ospf 1 area 0.0.0.0
+ negotiation auto
+ no ipv6 redirects
+ mpls ip
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ mtu 9000
+ ip address 169.0.0.58 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf network point-to-point
+ ip ospf 1 area 0.0.0.0
+ negotiation auto
+ no ipv6 redirects
+ mpls ip
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet3
+ mtu 9000
+ ip address 169.0.0.10 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf network point-to-point
+ ip ospf 1 area 0.0.0.0
+ negotiation auto
+ no ipv6 redirects
+ mpls ip
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet4
+ description to DC2
+ mtu 9000
+ vrf forwarding CUSTOMER-1
+ ip address 169.68.39.1 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ negotiation auto
+ no ipv6 redirects
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet5
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet6
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet7
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet8
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet9
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet10
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet11
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet12
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet13
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet14
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet15
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet16
+ description Mgmt-intf
+ mtu 9000
+ vrf forwarding Mgmt-vrf
+ no ip address
+ no ip redirects
+ no ip proxy-arp
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet16.1103
+ description Mgmt-vrf
+ encapsulation dot1Q 1103
+ vrf forwarding Mgmt-vrf
+ ip address 10.100.103.68 255.255.255.0
+ no ip redirects
+ no ip proxy-arp
+ no ipv6 redirects
+!
+router ospf 1
+ router-id 169.255.250.68
+!
+router bgp 651001
+ template peer-policy RR
+  next-hop-self
+  send-community both
+ exit-peer-policy
+ !
+ template peer-policy DC1-TENANTS
+  send-community both
+ exit-peer-policy
+ !
+ template peer-policy CUSTOMER-1
+  send-community both
+ exit-peer-policy
+ !
+ template peer-session RR
+  remote-as 651001
+  update-source Loopback0
+ exit-peer-session
+ !
+ template peer-session DC1-TENANTS
+  remote-as 65011
+ exit-peer-session
+ !
+ template peer-session CUSTOMER-1
+  remote-as 65022
+ exit-peer-session
+ !
+ bgp router-id 169.255.250.68
+ bgp always-compare-med
+ bgp log-neighbor-changes
+ bgp deterministic-med
+ bgp bestpath med missing-as-worst
+ bgp bestpath compare-routerid
+ no bgp default ipv4-unicast
+ neighbor 169.255.250.83 inherit peer-session RR
+ neighbor 169.255.250.84 inherit peer-session RR
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 169.255.250.83 activate
+  neighbor 169.255.250.83 send-community extended
+  neighbor 169.255.250.83 inherit peer-policy RR
+  neighbor 169.255.250.84 activate
+  neighbor 169.255.250.84 send-community extended
+  neighbor 169.255.250.84 inherit peer-policy RR
+ exit-address-family
+ !
+ address-family ipv4 vrf CUSTOMER-1
+  redistribute connected route-map CONN-VRF-TO-BGP
+  neighbor 169.68.39.2 inherit peer-session CUSTOMER-1
+  neighbor 169.68.39.2 activate
+  neighbor 169.68.39.2 inherit peer-policy CUSTOMER-1
+ exit-address-family
+!
+ip forward-protocol nd
+ip tcp path-mtu-discovery
+!
+ip bgp-community new-format
+no ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.103.1
+ip ssh bulk-mode 131072
+!
+!
+!
+route-map CONN-VRF-TO-BGP permit 100 
+ match interface GigabitEthernet6
+ set community 1001:1001
+!
+mpls ldp router-id Loopback0
+!
+!
+!
+control-plane
+!
+!
+mgcp behavior rsip-range tgcp-only
+mgcp behavior comedia-role none
+mgcp behavior comedia-check-media-src disable
+mgcp behavior comedia-sdp-force disable
+!
+mgcp profile default
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+line vty 0 4
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input all
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+!
+!
+!
+!
+!
+!
+netconf-yang
+restconf
+end
+
+bb-rtr68
