@@ -4,7 +4,7 @@
 !Running configuration last done at: Wed Nov 29 00:53:12 2023
 !Time: Wed Nov 29 00:53:14 2023
 
-version 10.3(3) Bios:version
+version 10.3(3) Bios:version  
 hostname dc1-spine1
 vdc dc1-spine1 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -250,7 +250,7 @@ line console
   exec-timeout 0
 line vty
   exec-timeout 60
-boot nxos bootflash:/nxos64-cs.10.3.3.F.bin
+boot nxos bootflash:/nxos64-cs.10.3.3.F.bin 
 router ospf UNDERLAY
   router-id 169.254.255.1
 router bgp 65001

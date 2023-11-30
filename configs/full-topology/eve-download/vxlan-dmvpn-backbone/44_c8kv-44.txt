@@ -1,7 +1,5 @@
-
-*Nov 29 16:35:12.326: %SYS-5-CONFIG_I: Configured from console by console
 !
-! Last configuration change at 16:35:12 UTC Wed Nov 29 2023
+! Last configuration change at 22:27:04 UTC Thu Nov 30 2023
 !
 version 17.11
 service timestamps debug datetime msec
@@ -26,6 +24,7 @@ vrf definition CAMPUS-1
   route-target import 100:100
   route-target import 100:200
   route-target import 1101:1101
+  route-target import 1166:1166
  exit-address-family
 !
 vrf definition CAMPUS-2
@@ -35,30 +34,12 @@ vrf definition CAMPUS-2
   route-target export 1102:1102
   route-target import 100:100
   route-target import 1102:1102
+  route-target import 1166:1166
  exit-address-family
 !
 vrf definition Mgmt-vrf
  !
  address-family ipv4
- exit-address-family
-!
-vrf definition TENANT1
- rd 100:100
- !
- address-family ipv4
-  route-target export 100:100
-  route-target import 100:100
-  route-target import 1101:1101
-  route-target import 1102:1102
- exit-address-family
-!
-vrf definition TENANT2
- rd 100:200
- !
- address-family ipv4
-  route-target export 100:200
-  route-target import 100:200
-  route-target import 1101:1101
  exit-address-family
 !
 no aaa new-model
@@ -247,10 +228,14 @@ interface GigabitEthernet2
  no mop sysid
 !
 interface GigabitEthernet3
- mtu 9000
- no ip address
- shutdown
+ ip address 169.44.47.1 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf network point-to-point
+ ip ospf 1 area 0.0.0.0
  negotiation auto
+ no ipv6 redirects
+ mpls ip
  no mop enabled
  no mop sysid
 !
@@ -413,7 +398,11 @@ router bgp 65033
  exit-address-family
  !
  address-family ipv4 vrf CAMPUS-2
+  network 0.0.0.0
   redistribute connected route-map CONN-CAMPUS2-TO-BGP
+  neighbor 169.44.55.2 remote-as 65055
+  neighbor 169.44.55.2 activate
+  neighbor 169.44.55.2 route-map BGP-TO-CAMPUS2 out
  exit-address-family
 !
 ip forward-protocol nd
@@ -427,6 +416,8 @@ ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.103.1
 ip ssh bulk-mode 131072
 !
 !
+ip prefix-list BGP-TO-CAMPUS2 seq 5 permit 0.0.0.0/0
+!
 !
 route-map CONN-CAMPUS2-TO-BGP permit 100 
  set origin igp
@@ -435,6 +426,10 @@ route-map CONN-CAMPUS2-TO-BGP permit 100
 route-map CONN-CAMPUS1-TO-BGP permit 100 
  set origin igp
  set community 1101:1101
+!
+route-map BGP-TO-CAMPUS2 permit 100 
+ match ip address prefix-list BGP-TO-CAMPUS2
+ set origin igp
 !
 mpls ldp router-id Loopback0
 !

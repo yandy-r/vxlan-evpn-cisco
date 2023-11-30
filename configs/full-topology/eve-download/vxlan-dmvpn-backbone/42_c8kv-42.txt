@@ -1,5 +1,5 @@
 !
-! Last configuration change at 16:35:24 UTC Wed Nov 29 2023
+! Last configuration change at 22:27:09 UTC Thu Nov 30 2023
 !
 version 17.11
 service timestamps debug datetime msec
@@ -23,6 +23,7 @@ vrf definition CAMPUS-1
   route-target import 100:100
   route-target import 100:200
   route-target import 1101:1101
+  route-target import 1166:1166
  exit-address-family
 !
 vrf definition CAMPUS-2
@@ -32,6 +33,7 @@ vrf definition CAMPUS-2
   route-target export 1102:1102
   route-target import 100:100
   route-target import 1102:1102
+  route-target import 1166:1166
  exit-address-family
 !
 vrf definition MPLS-ISP-1
@@ -43,25 +45,6 @@ vrf definition MPLS-ISP-1
 vrf definition Mgmt-vrf
  !
  address-family ipv4
- exit-address-family
-!
-vrf definition TENANT1
- rd 100:100
- !
- address-family ipv4
-  route-target export 100:100
-  route-target import 100:100
-  route-target import 1101:1101
-  route-target import 1102:1102
- exit-address-family
-!
-vrf definition TENANT2
- rd 100:200
- !
- address-family ipv4
-  route-target export 100:200
-  route-target import 100:200
-  route-target import 1101:1101
  exit-address-family
 !
 no aaa new-model
@@ -463,6 +446,8 @@ router bgp 65033
  neighbor 169.145.145.39 inherit peer-session DMVPN-EBGP
  neighbor 169.254.44.44 inherit peer-session RRC
  neighbor 169.254.45.45 inherit peer-session RRC
+ neighbor 169.254.46.46 inherit peer-session RRC
+ neighbor 169.254.47.47 inherit peer-session RRC
  neighbor 169.254.74.74 inherit peer-session RRC
  !
  address-family ipv4
@@ -487,6 +472,12 @@ router bgp 65033
   neighbor 169.254.45.45 activate
   neighbor 169.254.45.45 send-community extended
   neighbor 169.254.45.45 inherit peer-policy RRC
+  neighbor 169.254.46.46 activate
+  neighbor 169.254.46.46 send-community extended
+  neighbor 169.254.46.46 inherit peer-policy RRC
+  neighbor 169.254.47.47 activate
+  neighbor 169.254.47.47 send-community extended
+  neighbor 169.254.47.47 inherit peer-policy RRC
   neighbor 169.254.74.74 activate
   neighbor 169.254.74.74 send-community extended
   neighbor 169.254.74.74 inherit peer-policy RRC
@@ -497,7 +488,11 @@ router bgp 65033
  exit-address-family
  !
  address-family ipv4 vrf CAMPUS-2
+  network 0.0.0.0
   redistribute connected route-map CONN-CAMPUS2-TO-BGP
+  neighbor 169.42.54.2 remote-as 65055
+  neighbor 169.42.54.2 activate
+  neighbor 169.42.54.2 route-map BGP-TO-CAMPUS2 out
  exit-address-family
  !
  address-family ipv4 vrf MPLS-ISP-1
@@ -518,6 +513,8 @@ ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.103.1
 ip ssh bulk-mode 131072
 !
 !
+ip prefix-list BGP-TO-CAMPUS2 seq 5 permit 0.0.0.0/0
+!
 !
 route-map MPLS-CONN-VRF-TO-BGP permit 100 
 !
@@ -531,6 +528,10 @@ route-map CONN-CAMPUS2-TO-BGP permit 100
 route-map CONN-CAMPUS1-TO-BGP permit 100 
  set origin igp
  set community 1101:1101
+!
+route-map BGP-TO-CAMPUS2 permit 100 
+ match ip address prefix-list BGP-TO-CAMPUS2
+ set origin igp
 !
 mpls ldp router-id Loopback0
 !

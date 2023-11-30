@@ -1,56 +1,278 @@
-hostname sw54
+  
+!
+! Last configuration change at 22:17:28 UTC Thu Nov 30 2023
+!
+version 15.9
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname rtr-54
 !
 boot-start-marker
 boot-end-marker
 !
 !
-enable secret 5 $1$DnYH$C9yGzS8OTr.H4kZbdneZx0
+enable secret 9 $14$DnYH$I36rAX0QQd2IN.$cpDh2v9SXIQiC70fZBRIM1hRojrLlUa4wmB62q0UUFs
 !
-username cisco privilege 15 secret 5 $1$JxB9$w8wzqUk9TDGlHGVJEIVy91
-username admin privilege 15 secret cisco
 no aaa new-model
 !
 !
 !
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
 !
 !
 !
 !
 !
-no ip domain-lookup
-ip domain-name netlab.local
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name netlab.local
 ip cef
 no ipv6 cef
 !
+multilink bundle-name authenticated
 !
 !
-spanning-tree mode rapid-pvst
-spanning-tree extend system-id
 !
 !
+username cisco privilege 15 secret 9 $14$JxB9$qFyc4jH.gxAwX.$V7SjKjSbYm0l1EIJf5puBmAXgoi83nYclBa5bWr4mWk
+username admin privilege 15 secret 9 $9$ppU9/1k9JoElNt$MrtvzynmpWvaOK6Tsf/CcoFIwNYh7AE0YEDBS56NZEM
+!
+redundancy
+!
+!
+ip tcp path-mtu-discovery
 ! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ no shutdown
+ ip address 169.254.54.54 255.255.255.255
+ ip ospf 1 area 0.0.0.0
+!
+interface Loopback1
+ no shutdown
+ ip address 169.55.54.54 255.255.255.255
+!
+interface GigabitEthernet0/0
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/4
+ no shutdown
+ ip address 169.42.54.2 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ duplex auto
+ speed auto
+ media-type rj45
+ no ipv6 redirects
+!
+interface GigabitEthernet0/5
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/6
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/7
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/8
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/9
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/10
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/11
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/12
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/13
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/14
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/15
+ no shutdown
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ router-id 169.254.54.54
+ default-information originate metric-type 1
+!
+router bgp 65055
+ bgp router-id 169.254.54.54
+ bgp always-compare-med
+ bgp log-neighbor-changes
+ bgp deterministic-med
+ bgp graceful-restart
+ bgp bestpath med missing-as-worst
+ bgp bestpath compare-routerid
+ no bgp default ipv4-unicast
+ neighbor 169.42.54.1 remote-as 65033
+ !
+ address-family ipv4
+  redistribute connected route-map CONN-TO-BGP
+  neighbor 169.42.54.1 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
+ip bgp-community new-format
+!
 no ip http server
 no ip http secure-server
-!
-crypto key generate rsa general-keys modulus 2048
 ip ssh version 2
 !
-ip tcp path-mtu-discovery
+ipv6 ioam timestamp
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+route-map CONN-TO-BGP permit 100
+ set origin igp
 !
 !
+!
+control-plane
+!
+banner exec ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner incoming ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner login ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
 !
 line con 0
  exec-timeout 0 0
  privilege level 15
  logging synchronous
  stopbits 1
- no login
 line aux 0
 line vty 0 4
  exec-timeout 60 0
@@ -59,3 +281,6 @@ line vty 0 4
  login local
  transport input ssh
 !
+no scheduler allocate
+!
+end
