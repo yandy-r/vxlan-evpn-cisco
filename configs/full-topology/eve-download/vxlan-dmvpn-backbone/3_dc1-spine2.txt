@@ -4,7 +4,7 @@
 !Running configuration last done at: Wed Nov 29 01:11:48 2023
 !Time: Wed Nov 29 01:11:49 2023
 
-version 10.3(3) Bios:version  
+version 10.3(3) Bios:version
 hostname dc1-spine2
 vdc dc1-spine2 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -223,7 +223,7 @@ interface Ethernet1/64
 interface mgmt0
   no cdp enable
   vrf member management
-  ip address 172.21.203.2542/24
+  ip address 172.21.203.12/24
 
 interface loopback0
   ip address 169.254.255.2/32
@@ -242,7 +242,7 @@ line console
   exec-timeout 0
 line vty
   exec-timeout 60
-boot nxos bootflash:/nxos64-cs.10.3.3.F.bin 
+boot nxos bootflash:/nxos64-cs.10.3.3.F.bin
 router ospf UNDERLAY
   router-id 169.254.255.2
 router bgp 65001
