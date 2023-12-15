@@ -349,11 +349,11 @@ interface GigabitEthernet16
  no mop enabled
  no mop sysid
 !
-interface GigabitEthernet16.1103
+interface GigabitEthernet16.203
  description Mgmt-vrf
- encapsulation dot1Q 1103
+ encapsulation dot1Q 203
  vrf forwarding Mgmt-vrf
- ip address 10.100.103.26 255.255.255.0
+ ip address 172.21.203.26 255.255.255.0
  no ip redirects
  no ip proxy-arp
  no ipv6 redirects
@@ -368,7 +368,7 @@ ip bgp-community new-format
 no ip http server
 ip http authentication local
 ip http secure-server
-ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.103.1
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 172.21.203.254
 ip ssh bulk-mode 131072
 !
 !

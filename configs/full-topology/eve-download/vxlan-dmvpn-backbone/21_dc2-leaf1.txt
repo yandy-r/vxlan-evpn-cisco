@@ -82,8 +82,8 @@ vrf context TENANT1
     route-target export 66:50001
     route-target export 66:50001 evpn
 vrf context management
-  ip name-server 10.25.0.51 10.25.0.52
-  ip route 0.0.0.0/0 10.100.103.1
+  ip name-server 172.21.255.12 172.21.255.13
+  ip route 0.0.0.0/0 172.21.203.254
 
 
 interface Vlan1
@@ -335,7 +335,7 @@ interface Ethernet1/64
 interface mgmt0
   no cdp enable
   vrf member management
-  ip address 10.100.103.20/24
+  ip address 172.21.203.20/24
 
 interface loopback0
   ip address 169.254.255.20/32

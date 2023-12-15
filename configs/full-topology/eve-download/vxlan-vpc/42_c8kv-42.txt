@@ -1,0 +1,58 @@
+hostname csr-42
+!
+no ip domain lookup
+ip domain name netlab.local
+!
+!
+enable secret cisco
+!
+ip http authentication local
+!
+username admin privilege 15 secret cisco
+username cisco privilege 15 secret cisco
+username ndfc privilege 15 secret C1sco123
+!
+netconf-yang
+restconf
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+interface GigabitEthernet16
+ description management
+ vrf forwarding Mgmt-vrf
+ ip address 172.21.203.42 255.255.255.0
+ negotiation auto
+ no shutdown
+!
+no ip http server
+ip http secure-server
+!
+ip http authentication local
+!
+!
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 172.21.203.254
+!
+crypto key generate ec keysize 384
+yes
+crypto key generate rsa general-keys modulus 2048
+ip ssh version 2
+!
+!
+!
+line con 0
+  exec-timeout 0 0
+  privilege level 15
+  logging synchronous
+  no login
+  stopbits 1
+line vty 0 4
+  exec-timeout 60 0
+  privilege level 15
+  logging synchronous
+  login local
+  transport input all
+end

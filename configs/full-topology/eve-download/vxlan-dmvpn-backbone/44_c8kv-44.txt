@@ -28,12 +28,12 @@ vrf definition CAMPUS-1
  exit-address-family
 !
 vrf definition CAMPUS-2
- rd 1102:1102
+ rd 204:204
  !
  address-family ipv4
-  route-target export 1102:1102
+  route-target export 204:204
   route-target import 100:100
-  route-target import 1102:1102
+  route-target import 204:204
   route-target import 1166:1166
  exit-address-family
 !
@@ -347,11 +347,11 @@ interface GigabitEthernet16
  no mop enabled
  no mop sysid
 !
-interface GigabitEthernet16.1103
+interface GigabitEthernet16.203
  description Mgmt-vrf
- encapsulation dot1Q 1103
+ encapsulation dot1Q 203
  vrf forwarding Mgmt-vrf
- ip address 10.100.103.44 255.255.255.0
+ ip address 172.21.203.44 255.255.255.0
  no ip redirects
  no ip proxy-arp
  no ipv6 redirects
@@ -412,7 +412,7 @@ ip bgp-community new-format
 no ip http server
 ip http authentication local
 ip http secure-server
-ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.100.103.1
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 172.21.203.254
 ip ssh bulk-mode 131072
 !
 !
@@ -421,7 +421,7 @@ ip prefix-list BGP-TO-CAMPUS2 seq 5 permit 0.0.0.0/0
 !
 route-map CONN-CAMPUS2-TO-BGP permit 100 
  set origin igp
- set community 1102:1102
+ set community 204:204
 !
 route-map CONN-CAMPUS1-TO-BGP permit 100 
  set origin igp
