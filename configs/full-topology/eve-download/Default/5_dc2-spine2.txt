@@ -46,7 +46,7 @@ vrf context management
 
 interface mgmt0
   vrf member management
-  ip address 172.21.203.19/2424
+  ip address 172.21.203.19/24
   no cdp enable
   no shutdown
 

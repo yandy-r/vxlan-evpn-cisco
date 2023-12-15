@@ -352,7 +352,7 @@ interface Ethernet1/64
 interface mgmt0
   no cdp enable
   vrf member management
-  ip address 172.21.203.17/2424
+  ip address 172.21.203.17/24
 
 interface loopback0
   ip address 169.254.255.11/32 tag 12
