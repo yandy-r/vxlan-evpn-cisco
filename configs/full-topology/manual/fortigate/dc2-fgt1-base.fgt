@@ -21,6 +21,10 @@ config system settings
     set gui-policy-disclaimer enable
     set gui-dynamic-device-os-id enable
 end
+config system dns
+    set primary 172.21.255.12
+    set secondary 172.21.255.13
+end
 config system interface
     edit "port1"
         set vdom "root"
@@ -40,7 +44,7 @@ config system interface
         set device-identification enable
         set role wan
         set interface "port1"
-        set vlanid 1109
+        set vlanid 201
     next
     edit "port2"
         set vdom "root"
@@ -75,7 +79,7 @@ config system interface
         set device-identification enable
         set role wan
         set interface "port3"
-        set vlanid 1110
+        set vlanid 202
     next
     edit "port8"
         set vdom "root"
@@ -91,7 +95,7 @@ config system interface
         set device-identification enable
         set role lan
         set interface "port8"
-        set vlanid 1102
+        set vlanid 204
     next
     edit "lo0"
         set vdom "root"
@@ -117,7 +121,7 @@ config router static
         set device "internet1"
     next
     edit 2
-        set gateway 172.21.202.1
+        set gateway 172.21.202.254
         set device "internet2"
     next
     edit 10
