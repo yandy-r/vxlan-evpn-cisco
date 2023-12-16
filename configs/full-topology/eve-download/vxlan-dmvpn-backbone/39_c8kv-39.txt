@@ -33,7 +33,7 @@ vrf definition TENANT1
   route-target export 100:100
   route-target import 100:100
   route-target import 1101:1101
-  route-target import 204:204
+  route-target import 1102:1102
  exit-address-family
 !
 no aaa new-model

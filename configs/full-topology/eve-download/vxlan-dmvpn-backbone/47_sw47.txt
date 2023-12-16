@@ -19,7 +19,7 @@ vrf definition CAMPUS-INTERNET
  address-family ipv4
   route-target export 1166:1166
   route-target import 1101:1101
-  route-target import 204:204
+  route-target import 1102:1102
   route-target import 1166:1166
  exit-address-family
 !
