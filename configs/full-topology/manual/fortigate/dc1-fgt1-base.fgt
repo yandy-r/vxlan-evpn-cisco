@@ -34,7 +34,7 @@ config system interface
     next
     edit "internet1"
         set vdom "root"
-        set ip 10.100.109.31 255.255.255.0
+        set ip 172.21.201.31 255.255.255.0
         set allowaccess ping
         set alias "internet1"
         set device-identification enable
@@ -69,7 +69,7 @@ config system interface
     next
     edit "internet2"
         set vdom "root"
-        set ip 10.100.110.31 255.255.255.0
+        set ip 172.21.202.31 255.255.255.0
         set allowaccess ping
         set alias "internet2"
         set device-identification enable
@@ -85,7 +85,7 @@ config system interface
     next
     edit "mgmt"
         set vdom "root"
-        set ip 10.100.102.31 255.255.255.0
+        set ip 172.21.204.31 255.255.255.0
         set allowaccess ping https ssh snmp http fgfm
         set alias "mgmt"
         set device-identification enable
@@ -113,26 +113,26 @@ config system zone
 end
 config router static
     edit 1
-        set gateway 10.100.109.1
+        set gateway 172.21.201.254
         set device "internet1"
     next
     edit 2
-        set gateway 10.100.110.1
+        set gateway 172.21.202.1
         set device "internet2"
     next
     edit 10
         set dst 10.0.0.0 255.0.0.0
-        set gateway 10.100.102.1
+        set gateway 172.21.204.254
         set device "mgmt"
     next
     edit 11
         set dst 172.16.0.0 255.240.0.0
-        set gateway 10.100.102.1
+        set gateway 172.21.204.254
         set device "mgmt"
     next
     edit 12
         set dst 192.168.0.0 255.255.0.0
-        set gateway 10.100.102.1
+        set gateway 172.21.204.254
         set device "mgmt"
     next
 end
@@ -230,7 +230,7 @@ config firewall address
     next
     edit "mgmt address"
         set type interface-subnet
-        set subnet 10.100.102.0 255.255.255.0
+        set subnet 172.21.204.0 255.255.255.0
         set interface "mgmt"
     next
     edit "lo0 address"

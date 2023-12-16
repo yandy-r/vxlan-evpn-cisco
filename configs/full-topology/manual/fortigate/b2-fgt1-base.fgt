@@ -34,7 +34,7 @@ config system interface
     next
     edit "internet1"
         set vdom "root"
-        set ip 10.100.109.61 255.255.255.0
+        set ip 172.21.201.61 255.255.255.0
         set allowaccess ping
         set alias "internet1"
         set device-identification enable
@@ -67,7 +67,7 @@ config system interface
     next
     edit "internet2"
         set vdom "root"
-        set ip 10.100.110.61 255.255.255.0
+        set ip 172.21.202.61 255.255.255.0
         set allowaccess ping
         set alias "internet2"
         set device-identification enable
@@ -83,7 +83,7 @@ config system interface
     next
     edit "mgmt"
         set vdom "root"
-        set ip 10.100.102.61 255.255.255.0
+        set ip 172.21.204.61 255.255.255.0
         set allowaccess ping https ssh snmp http fgfm
         set alias "mgmt"
         set device-identification enable
@@ -108,26 +108,26 @@ config system zone
 end
 config router static
     edit 1
-        set gateway 10.100.109.1
+        set gateway 172.21.201.254
         set device "internet1"
     next
     edit 2
-        set gateway 10.100.110.1
+        set gateway 172.21.202.1
         set device "internet2"
     next
     edit 10
         set dst 10.0.0.0 255.0.0.0
-        set gateway 10.100.102.1
+        set gateway 172.21.204.254
         set device "mgmt"
     next
     edit 11
         set dst 172.16.0.0 255.240.0.0
-        set gateway 10.100.102.1
+        set gateway 172.21.204.254
         set device "mgmt"
     next
     edit 12
         set dst 192.168.0.0 255.255.0.0
-        set gateway 10.100.102.1
+        set gateway 172.21.204.254
         set device "mgmt"
     next
 end
@@ -156,7 +156,7 @@ config vpn ipsec phase1-interface
         set auto-discovery-shortcuts dependent
         set network-overlay enable
         set network-id 1
-        set remote-gw 10.100.109.31
+        set remote-gw 172.21.201.31
         set psksecret ENC yVgcpR9aW4B7dDEbvByHeQrZ+Nn04oSpo9Rjd7nJto8KD/x5eSdKpv7lbBkW/LclLkmxoVb0ap1uQGoL0sX0J0JgJy6bAT7IyryoATtYUILa9fRcZSh9SRwG5HHwSRh3l+ZChVufq7pPAUz+NZAMaFi12KsOGZepPLonnPyyG5TSvlPEcBFhW9gvFGvyZFDGuyiVjg==
     next
     edit "hub2-vpn1"
@@ -173,7 +173,7 @@ config vpn ipsec phase1-interface
         set auto-discovery-shortcuts dependent
         set network-overlay enable
         set network-id 2
-        set remote-gw 10.100.109.41
+        set remote-gw 172.21.201.41
         set psksecret ENC /OnUb4+o8WaZyMpoUA1rdYMNJOns6HxsGq7Qu+gj8ojt+qAgKQIKrvq1njtjOhLk4KVBDgBK3aV/48xedPvjHDOpuIFTRQQrjuqo1aFWT6bD60FwYCUDL9MT5+7+eV389g4k6lLT2DTQRgvz0+bjTonwJ8COwCuCzv4qv3iiKty7Kenf1ZR6oqZjnPJMNclz6Jn2mw==
     next
     edit "hub1-vpn2"
@@ -190,7 +190,7 @@ config vpn ipsec phase1-interface
         set auto-discovery-shortcuts dependent
         set network-overlay enable
         set network-id 3
-        set remote-gw 10.100.110.31
+        set remote-gw 172.21.202.31
         set psksecret ENC 608cfwuuTsHrzUjpUmiQU0BCeZbgypTT0JTY64nYzn8FB7wlgviCHFQMRSy4qsBWrovyig0n656MUCQ3ywMkp4r/23nE6xIPw2BoRqyxUUVepuhXFedOqeL1XCL9fT07xXWXJBeOITXL9v5OydeO9BYFF1tc+d6bG1Mct+WR6rfBZDUFe0mL1pJbCh523rq6KkJnew==
     next
     edit "hub2-vpn2"
@@ -207,7 +207,7 @@ config vpn ipsec phase1-interface
         set auto-discovery-shortcuts dependent
         set network-overlay enable
         set network-id 4
-        set remote-gw 10.100.110.41
+        set remote-gw 172.21.202.41
         set psksecret ENC /wRZGLs3+aXAlGzfuZsfDDMnQU8uneG8a8n/AurAxiF8Kcmjjvj126OcUQnkAos9L9ID/dfdsQGiJSYivR0N+kmEv/haZwoiUU219H+ucps+HtJZatTfUtXXT4MGibhQZaKVq3FI9Sms4d8XPw/1pa67Bk4f7FmpOA3jJirT5FQjJzlAkllJizetgoVwCku9PUdygQ==
     next
 end
@@ -404,7 +404,7 @@ config firewall address
     next
     edit "mgmt address"
         set type interface-subnet
-        set subnet 10.100.102.0 255.255.255.0
+        set subnet 172.21.204.0 255.255.255.0
         set interface "mgmt"
     next
     edit "lo0 address"
