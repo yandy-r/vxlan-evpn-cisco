@@ -37,7 +37,7 @@ spanning-tree mode rapid-pvst
 spanning-tree extend system-id
 !
 !
-! 
+!
 !
 !
 !
@@ -114,7 +114,7 @@ router bgp 65101
  bgp log-neighbor-changes
  bgp deterministic-med
  bgp graceful-restart
- neighbor 172.26.0.1 remote-as 64000
+ neighbor 169.26.0.1 remote-as 64001
  !
  address-family ipv4
   redistribute connected
