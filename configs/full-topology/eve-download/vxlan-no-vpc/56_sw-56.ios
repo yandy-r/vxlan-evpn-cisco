@@ -1,0 +1,60 @@
+hostname sw56
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$DnYH$C9yGzS8OTr.H4kZbdneZx0
+!
+username cisco privilege 15 secret 5 $1$JxB9$w8wzqUk9TDGlHGVJEIVy91
+username admin privilege 15 secret cisco
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain-lookup
+ip domain-name netlab.local
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+!
+! 
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+crypto key generate rsa general-keys modulus 2048
+ip ssh version 2
+!
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+ no login
+line aux 0
+line vty 0 4
+ exec-timeout 60 0
+ privilege level 15
+ logging synchronous
+ login local
+ transport input ssh
+!
