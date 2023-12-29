@@ -1,6 +1,6 @@
   
 !
-! Last configuration change at 22:12:24 UTC Thu Nov 30 2023
+! Last configuration change at 18:26:24 UTC Thu Dec 28 2023
 !
 version 15.9
 service timestamps debug datetime msec
@@ -12,6 +12,12 @@ hostname rtr-55
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition Mgmt-vrf
+ rd 203:203
+ !
+ address-family ipv4
+ exit-address-family
 !
 enable secret 9 $14$DnYH$yjqZQmh.Lm/vm.$pSx7CcVMqS2BfbfgbXxLs.IMIVUPs3U71zoZB8Lavgk
 !
@@ -45,7 +51,7 @@ multilink bundle-name authenticated
 !
 !
 username cisco privilege 15 secret 9 $14$JxB9$7vtC5bSnYKMTj.$ZZkHfjB7xMn6rZyh6c5p6vsqCbNY2Orp0abkjDE9wzs
-username admin privilege 15 secret 9 $9$eDUarx0.Jch427$a/oPZ8KFS0Tdw3COIipUt7U.JibN4mriXlmvD3YM/1Y
+username admin privilege 15 secret 9 $9$uFPCz8l96xloqv$8Rwe0rXY9CpL4Tf7q.8RUv40ISApy0oWH8mrgu02TGY
 !
 redundancy
 !
@@ -72,6 +78,7 @@ interface Loopback0
 interface Loopback1
  no shutdown
  ip address 169.55.55.55 255.255.255.255
+ ip ospf 1 area 0.0.0.0
 !
 interface GigabitEthernet0/0
  no shutdown
@@ -83,30 +90,46 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  no shutdown
- no ip address
- shutdown
+ description to campus-2 sw-57
+ ip address 169.55.0.13 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf network point-to-point
+ ip ospf 1 area 0.0.0.0
  duplex auto
  speed auto
  media-type rj45
+ no ipv6 redirects
 !
 interface GigabitEthernet0/2
  no shutdown
- no ip address
- shutdown
+ description to campus-2 sw-56
+ ip address 169.55.0.17 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf network point-to-point
+ ip ospf 1 area 0.0.0.0
  duplex auto
  speed auto
  media-type rj45
+ no ipv6 redirects
 !
 interface GigabitEthernet0/3
  no shutdown
- no ip address
- shutdown
+ description to campus-2 rtr-54
+ ip address 169.55.0.2 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip ospf network point-to-point
+ ip ospf 1 area 0.0.0.0
  duplex auto
  speed auto
  media-type rj45
+ no ipv6 redirects
 !
 interface GigabitEthernet0/4
  no shutdown
+ mtu 9000
  ip address 169.44.55.2 255.255.255.252
  no ip redirects
  no ip proxy-arp
@@ -197,11 +220,22 @@ interface GigabitEthernet0/14
 !
 interface GigabitEthernet0/15
  no shutdown
+ description Management interface
  no ip address
- shutdown
+ no ip redirects
+ no ip proxy-arp
  duplex auto
  speed auto
- media-type rj45
+ no ipv6 redirects
+!
+interface GigabitEthernet0/15.203
+ no shutdown
+ encapsulation dot1Q 203
+ vrf forwarding Mgmt-vrf
+ ip address 172.21.203.55 255.255.255.0
+ no ip redirects
+ no ip proxy-arp
+ no ipv6 redirects
 !
 router ospf 1
  router-id 169.254.55.55
@@ -220,6 +254,7 @@ router bgp 65055
  !
  address-family ipv4
   redistribute connected route-map CONN-TO-BGP
+  redistribute ospf 1 route-map OSPF-TO-BGP
   neighbor 169.44.55.1 activate
  exit-address-family
 !
@@ -229,6 +264,7 @@ ip bgp-community new-format
 !
 no ip http server
 no ip http secure-server
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 172.21.203.254
 ip ssh version 2
 !
 ipv6 ioam timestamp
@@ -236,11 +272,16 @@ ipv6 ioam timestamp
 route-map CONN-TO-BGP permit 100
  set origin igp
 !
+route-map OSPF-TO-BGP permit 100
+ set origin igp
+!
+snmp-server community NETBRAIN RO
+snmp-server chassis-id 
 !
 !
 control-plane
 !
-banner exec ^C
+banner exec ^CC
 **************************************************************************
 * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
 * education. IOSv is provided as-is and is not supported by Cisco's      *
@@ -249,7 +290,7 @@ banner exec ^C
 * purposes is expressly prohibited except as otherwise authorized by     *
 * Cisco in writing.                                                      *
 **************************************************************************^C
-banner incoming ^C
+banner incoming ^CC
 **************************************************************************
 * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
 * education. IOSv is provided as-is and is not supported by Cisco's      *
@@ -258,7 +299,7 @@ banner incoming ^C
 * purposes is expressly prohibited except as otherwise authorized by     *
 * Cisco in writing.                                                      *
 **************************************************************************^C
-banner login ^C
+banner login ^CC
 **************************************************************************
 * IOSv is strictly limited to use for evaluation, demonstration and IOS  *
 * education. IOSv is provided as-is and is not supported by Cisco's      *

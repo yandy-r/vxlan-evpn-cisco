@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 04:32:49 UTC Tue Nov 28 2023
+! Last configuration change at 16:01:04 UTC Sat Dec 23 2023
 !
 version 15.2
 service timestamps debug datetime msec
@@ -35,13 +35,8 @@ no ipv6 cef
 !
 spanning-tree mode pvst
 spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority 61440
 !
-!
-vlan 204
- name mgmt-204
-!
-vlan 203
- name mgmt-203
 !
 ! 
 !

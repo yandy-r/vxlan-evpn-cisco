@@ -1,8 +1,8 @@
 
 
 !Command: show running-config
-!Running configuration last done at: Wed Nov 29 01:07:14 2023
-!Time: Wed Nov 29 01:07:15 2023
+!Running configuration last done at: Fri Dec 29 00:02:07 2023
+!Time: Fri Dec 29 00:02:07 2023
 
 version 10.3(3) Bios:version  
 hostname dc2-bgw1
@@ -57,6 +57,7 @@ rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
 rmon event 3 log trap public description ERROR(3) owner PMON@ERROR
 rmon event 4 log trap public description WARNING(4) owner PMON@WARNING
 rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
+snmp-server community NETBRAIN group network-operator
 
 fabric forwarding anycast-gateway-mac 0000.0000.aaaa
 ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4

@@ -1,6 +1,6 @@
 
 !
-! Last configuration change at 04:32:41 UTC Tue Nov 28 2023
+! Last configuration change at 01:13:48 UTC Fri Dec 29 2023
 !
 version 15.2
 service timestamps debug datetime msec
@@ -35,15 +35,10 @@ no ipv6 cef
 !
 spanning-tree mode pvst
 spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority 61440
 !
 !
-vlan 204
- name mgmt-204
-!
-vlan 203
- name mgmt-103
-!
-!
+! 
 !
 !
 !
@@ -101,7 +96,10 @@ interface Ethernet1/1
 !
 interface Ethernet1/2
  no shutdown
- shutdown
+ switchport trunk allowed vlan 255
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ spanning-tree portfast edge trunk
 !
 interface Ethernet1/3
  no shutdown

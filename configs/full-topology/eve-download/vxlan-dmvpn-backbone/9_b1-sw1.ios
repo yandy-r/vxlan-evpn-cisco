@@ -1,5 +1,5 @@
 !
-! Last configuration change at 19:00:44 UTC Tue Jul 4 2023 by cisco
+! Last configuration change at 01:11:44 UTC Fri Dec 29 2023
 !
 version 15.2
 service timestamps debug datetime msec
@@ -13,10 +13,16 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition Mgmt-vrf
+ rd 203:203
+ !
+ address-family ipv4
+ exit-address-family
+!
 enable secret 5 $1$DnYH$C9yGzS8OTr.H4kZbdneZx0
 !
 username cisco privilege 15 secret 5 $1$JxB9$w8wzqUk9TDGlHGVJEIVy91
-username admin privilege 15 secret cisco
+username admin privilege 15 secret 5 $1$TiGG$u3hQVUcr/DwgZDgmRtMCq.
 no aaa new-model
 !
 !
@@ -37,7 +43,7 @@ spanning-tree mode rapid-pvst
 spanning-tree extend system-id
 !
 !
-!
+! 
 !
 !
 !
@@ -101,12 +107,58 @@ interface GigabitEthernet1/3
  shutdown
  negotiation auto
 !
+interface GigabitEthernet2/0
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet2/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet2/2
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet2/3
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet3/0
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet3/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet3/2
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet
+ no shutdown
+*Dec 29 01:11:44.205: %SYS-5-CONFIG_I: Configured from console by console3/3
+ description Management interface
+ switchport trunk allowed vlan 203
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ negotiation auto
+ spanning-tree portfast edge
+!
 interface Vlan100
  no shutdown
  description users
  ip address 169.26.100.1 255.255.255.0
  no ip redirects
  no ip proxy-arp
+!
+interface Vlan203
+ no shutdown
+ vrf forwarding Mgmt-vrf
+ ip address 172.21.203.111 255.255.255.0
+ no ip redirects
+ no ip proxy-arp
+ no ipv6 redirects
 !
 router bgp 65101
  bgp router-id 169.255.255.52
@@ -127,6 +179,8 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 172.21.203.254
+ip ssh version 2
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
@@ -134,10 +188,11 @@ ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
+snmp-server community NETBRAIN RO
 !
 control-plane
 !
-banner exec ^C
+banner exec ^CC
 IOSv - Cisco Systems Confidential -
 
 Supplemental End User License Restrictions
@@ -146,7 +201,7 @@ This IOSv software is provided AS-IS without warranty of any kind. Under no circ
 
 By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
 ^C
-banner incoming ^C
+banner incoming ^CC
 IOSv - Cisco Systems Confidential -
 
 Supplemental End User License Restrictions
@@ -155,7 +210,7 @@ This IOSv software is provided AS-IS without warranty of any kind. Under no circ
 
 By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
 ^C
-banner login ^C
+banner login ^CC
 IOSv - Cisco Systems Confidential -
 
 Supplemental End User License Restrictions

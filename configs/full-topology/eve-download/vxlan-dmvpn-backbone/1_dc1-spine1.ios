@@ -1,10 +1,10 @@
 
 
 !Command: show running-config
-!Running configuration last done at: Wed Nov 29 00:53:12 2023
-!Time: Wed Nov 29 00:53:14 2023
+!Running configuration last done at: Fri Dec 29 00:15:25 2023
+!Time: Fri Dec 29 00:15:26 2023
 
-version 10.3(3) Bios:version
+version 10.3(3) Bios:version  
 hostname dc1-spine1
 vdc dc1-spine1 id 1
   limit-resource vlan minimum 16 maximum 4094
@@ -37,6 +37,8 @@ username ndfc password 5 $5$MIKLNB$wvC/Pnp7zguCk1j9PeIvsVzsLf/Ifiw30DB3p1BTrt1  
 username ndfc passphrase  lifetime 99999 warntime 14 gracetime 3
 username automation password 5 $5$HKCFNL$IjDtop4V3icB9Wv5hcNG45gfU3SYEM74vh9SUZCFTI6  role network-admin
 username automation passphrase  lifetime 99999 warntime 14 gracetime 3
+username snmp-admin password 5 $5$MAKPMB$EKlbc/kk2rGmc4aOl5wcman/5xXEcWJKT1cxqmxOeR/  role network-operator
+username snmp-admin passphrase  lifetime 99999 warntime 14 gracetime 3
 no ip domain-lookup
 ip domain-name netlab.local
 copp profile strict
@@ -44,11 +46,13 @@ snmp-server user ndfc network-admin auth md5 176DFE99EE6A82EFD4760E7E724393A14F4
 snmp-server user admin network-admin auth md5 042EB26967E16C40B00BDFFDB70DC6D79775 priv aes-128 166B955077DA7D3E8B3EDAB4BA408884A81B localizedV2key
 snmp-server user cisco network-admin auth md5 204BBD7C6EC47B05BF1DFBA6EB0FD3D6AA4C priv aes-128 333C951853F93B47A95597BDB618CD87B67C localizedV2key
 snmp-server user automation network-admin auth md5 205E27B5F2818E58BF76FCB9754425060EE9 priv aes-128 37761B8B98ECFB18EA35ABB3781B7A0D0DE3 localizedV2key
+snmp-server user snmp-admin network-operator auth md5 056EE4BCEF78A39DFE694332745E9FCE051B priv aes-128 2155CD82DE1C96F5CB4372723317C7B55C4E localizedV2key
 rmon event 1 log trap public description FATAL(1) owner PMON@FATAL
 rmon event 2 log trap public description CRITICAL(2) owner PMON@CRITICAL
 rmon event 3 log trap public description ERROR(3) owner PMON@ERROR
 rmon event 4 log trap public description WARNING(4) owner PMON@WARNING
 rmon event 5 log trap public description INFORMATION(5) owner PMON@INFO
+snmp-server community NETBRAIN group network-operator
 
 ip pim rp-address 169.254.255.100 group-list 224.0.0.0/4
 ip pim ssm range 232.0.0.0/8
@@ -250,7 +254,7 @@ line console
   exec-timeout 0
 line vty
   exec-timeout 60
-boot nxos bootflash:/nxos64-cs.10.3.3.F.bin
+boot nxos bootflash:/nxos64-cs.10.3.3.F.bin 
 router ospf UNDERLAY
   router-id 169.254.255.1
 router bgp 65001

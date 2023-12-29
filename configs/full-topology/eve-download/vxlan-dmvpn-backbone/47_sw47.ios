@@ -1,5 +1,5 @@
 !
-! Last configuration change at 22:25:55 UTC Thu Nov 30 2023
+! Last configuration change at 18:34:29 UTC Thu Dec 28 2023
 !
 version 15.2
 service timestamps debug datetime msec
@@ -23,10 +23,16 @@ vrf definition CAMPUS-INTERNET
   route-target import 1166:1166
  exit-address-family
 !
+vrf definition Mgmt-vrf
+ rd 203:203
+ !
+ address-family ipv4
+ exit-address-family
+!
 enable secret 5 $1$DnYH$C9yGzS8OTr.H4kZbdneZx0
 !
 username cisco privilege 15 secret 5 $1$JxB9$w8wzqUk9TDGlHGVJEIVy91
-username admin privilege 15 secret 5 $1$GmuG$BMfgUv3xfTMC7LC0Ji9CP0
+username admin privilege 15 secret 5 $1$24pS$XrwnMOcOy/JyUhKN.q3Bm1
 no aaa new-model
 !
 !
@@ -117,8 +123,7 @@ interface GigabitEthernet1/1
 interface GigabitEthernet1/2
  no shutdown
  no switchport
- vrf forward
-*Nov 30 22:25:55.151: %SYS-5-CONFIG_I: Configured from console by consoleing CAMPUS-INTERNET
+ vrf forwarding CAMPUS-INTERNET
  ip address 169.33.0.6 255.255.255.252
  no ip redirects
  no ip proxy-arp
@@ -159,7 +164,22 @@ interface GigabitEthernet3/2
 !
 interface GigabitEthernet3/3
  no shutdown
+ description Management interface
+ no switchport
+ no ip address
+ no ip redirects
+ no ip proxy-arp
  negotiation auto
+ no ipv6 redirects
+!
+interface GigabitEthernet3/3.203
+ no shutdown
+ encapsulation dot1Q 203
+ vrf forwarding Mgmt-vrf
+ ip address 172.21.203.47 255.255.255.0
+ no ip redirects
+ no ip proxy-arp
+ no ipv6 redirects
 !
 router ospf 1
  router-id 169.254.47.47
@@ -208,6 +228,7 @@ ip bgp-community new-format
 no ip http server
 no ip http secure-server
 !
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 172.21.203.254
 ip ssh version 2
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
@@ -229,10 +250,11 @@ route-map CONN-INTERNET-TO-BGP permit 100
 !
 mpls ldp router-id Loopback0
 !
+snmp-server community NETBRAIN RO
 !
 control-plane
 !
-banner exec ^C
+banner exec ^CC
 IOSv - Cisco Systems Confidential -
 
 Supplemental End User License Restrictions
@@ -241,7 +263,7 @@ This IOSv software is provided AS-IS without warranty of any kind. Under no circ
 
 By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
 ^C
-banner incoming ^C
+banner incoming ^CC
 IOSv - Cisco Systems Confidential -
 
 Supplemental End User License Restrictions
@@ -250,7 +272,7 @@ This IOSv software is provided AS-IS without warranty of any kind. Under no circ
 
 By using the software, you agree to abide by the terms and conditions of the Cisco End User License Agreement at http://www.cisco.com/go/eula. Unauthorized use or distribution of this software is expressly prohibited.
 ^C
-banner login ^C
+banner login ^CC
 IOSv - Cisco Systems Confidential -
 
 Supplemental End User License Restrictions

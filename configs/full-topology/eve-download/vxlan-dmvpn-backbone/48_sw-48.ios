@@ -1,5 +1,5 @@
 !
-! Last configuration change at 18:25:37 UTC Thu Dec 28 2023
+! Last configuration change at 18:28:00 UTC Thu Dec 28 2023
 !
 version 15.2
 service timestamps debug datetime msec
@@ -7,7 +7,7 @@ service timestamps log datetime msec
 no service password-encryption
 service compress-config
 !
-hostname sw-57
+hostname sw-48
 !
 boot-start-marker
 boot-end-marker
@@ -19,10 +19,10 @@ vrf definition Mgmt-vrf
  address-family ipv4
  exit-address-family
 !
-enable secret 5 $1$n8Hc$Z0Hk8CrqXvLp7n5CR8ZXu0
+enable secret 5 $1$cDpt$BP.Z.T2otIPiR42G3Ucal.
 !
-username cisco privilege 15 secret 5 $1$hB4Y$rTf8kBGC1O3wxHsAk9WLn/
-username admin privilege 15 secret 5 $1$bKns$rOy94SimSeiUWCLCkYzog0
+username cisco privilege 15 secret 5 $1$d0yb$BSNwaUUNf8lkqzBGQRtru.
+username admin privilege 15 secret 5 $1$32.k$x51YsHegfL.BSKmqDXoq61
 no aaa new-model
 !
 !
@@ -39,10 +39,8 @@ no ipv6 cef
 !
 !
 !
-spanning-tree mode rapid-pvst
+spanning-tree mode pvst
 spanning-tree extend system-id
-spanning-tree vlan 100 priority 4096
-spanning-tree vlan 101 priority 0
 !
 !
 ! 
@@ -60,70 +58,64 @@ spanning-tree vlan 101 priority 0
 !
 interface Loopback0
  no shutdown
- ip address 169.254.57.57 255.255.255.255
- ip ospf 1 area 0.0.0.0
-!
-interface Port-channel1
- no shutdown
- description to campus-2 sw-56
- switchport trunk encapsulation dot1q
- switchport mode trunk
+ ip address 169.254.48.48 255.255.255.255
 !
 interface GigabitEthernet0/0
  no shutdown
- description to campus-2 sw-56
- switchport trunk encapsulation dot1q
- switchport mode trunk
+ description to campus-1 rtr-52
+ no switchport
+ ip address 169.44.0.6 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip router isis UNDERLAY
  negotiation auto
- channel-group 1 mode active
+ no ipv6 redirects
+ isis network point-to-point 
 !
 interface GigabitEthernet0/1
  no shutdown
- description to campus-2 sw-56
- switchport trunk encapsulation dot1q
- switchport mode trunk
+ description to campus-1 rtr-53
+ no switchport
+ ip address 169.44.0.14 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip router isis UNDERLAY
  negotiation auto
- channel-group 1 mode active
+ no ipv6 redirects
+ isis network point-to-point 
 !
 interface GigabitEthernet0/2
  no shutdown
- description to campus-2 rtr-55
+ description to campus-1 sw-50
  no switchport
- ip address 169.55.0.14 255.255.255.252
+ ip address 169.44.0.21 255.255.255.252
  no ip redirects
  no ip proxy-arp
- ip ospf network point-to-point
- ip ospf 1 area 0.0.0.0
+ ip router isis UNDERLAY
  negotiation auto
  no ipv6 redirects
+ isis network point-to-point 
 !
 interface GigabitEthernet0/3
  no shutdown
- description to campus-2 rtr-54
+ description to campus-1 sw-51
  no switchport
- ip address 169.55.0.10 255.255.255.252
+ ip address 169.44.0.25 255.255.255.252
  no ip redirects
  no ip proxy-arp
- ip ospf network point-to-point
- ip ospf 1 area 0.0.0.0
+ ip router isis UNDERLAY
  negotiation auto
  no ipv6 redirects
+ isis network point-to-point 
 !
 interface GigabitEthernet1/0
  no shutdown
- description to sw-59
- switchport trunk allowed vlan 100,101
- switchport trunk encapsulation dot1q
- switchport mode trunk
  negotiation auto
 !
 interface GigabitEthernet1/1
  no shutdown
- description to sw-58
- switchport trunk allowed vlan 100,101
- switchport trunk encapsulation dot1q
- switchport mode trunk
- negotiation auto
+ negotiat
+*Dec 28 18:28:00.651: %SYS-5-CONFIG_I: Configured from console by consoleion auto
 !
 interface GigabitEthernet1/2
  no shutdown
@@ -175,46 +167,18 @@ interface GigabitEthernet3/3.203
  no shutdown
  encapsulation dot1Q 203
  vrf forwarding Mgmt-vrf
- ip address 172.21.203.57 255.255.255.0
+ ip address 172.21.203.48 255.255.255.0
  no ip redirects
  no ip proxy-arp
  no ipv6 redirects
 !
-interface Vlan100
- no shutdown
- ip address 169.55.100.3 255.255.255.0
- no ip redirects
- no ip proxy-arp
- standby 100 ip 169.55.100.1
- standby 100 preempt
- ip ospf 1 area 0.0.0.100
- no ipv6 redirects
-!
-interface Vlan101
- no shutdown
- ip address 169.55.101.3 255.255.255.0
- no ip redirects
- no ip proxy-arp
- standby 101 ip 169.55.101.1
- standby 101 priority 255
- standby 101 preempt
- ip ospf 1 area 0.0.0.100
- no ipv6 redirects
-!
-interface Vlan255
- no shutdown
- ip address 169.55.255.2 255.255.255.252
- no ip redirects
- no ip proxy-arp
- ip ospf network point-to-point
- ip ospf 1 area 0.0.0.0
- no ipv6 redirects
-!
-router ospf 1
- router-id 169.254.57.57
- area 0.0.0.100 stub no-summary
- passive-interface Vlan100
- passive-interface Vlan101
+router isis UNDERLAY
+ net 49.0000.0000.0000.0048.00
+ is-type level-2-only
+ router-id Loopback0
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0
 !
 ip forward-protocol nd
 !

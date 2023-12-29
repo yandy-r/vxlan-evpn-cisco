@@ -1,5 +1,5 @@
 !
-! Last configuration change at 01:11:09 UTC Fri Dec 29 2023
+! Last configuration change at 18:28:23 UTC Thu Dec 28 2023
 !
 version 17.11
 service timestamps debug datetime msec
@@ -9,7 +9,7 @@ platform qfp utilization monitor load 80
 platform punt-keepalive disable-kernel-core
 platform console serial
 !
-hostname c8kv-77
+hostname c8kv-52
 !
 boot-start-marker
 boot-end-marker
@@ -42,6 +42,8 @@ login on-success log
 !
 !
 subscriber templating
+ipv6 unicast-routing
+ipv6 multicast-routing
 !
 ! 
 ! 
@@ -57,19 +59,48 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-71247510
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-71247510
+ revocation-check none
+ rsakeypair TP-self-signed-71247510
+ hash sha256
+!
 crypto pki trustpoint SLA-TrustPoint
  enrollment pkcs12
  revocation-check crl
  hash sha256
 !
-crypto pki trustpoint TP-self-signed-154110252
- enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-154110252
- revocation-check none
- rsakeypair TP-self-signed-154110252
- hash sha256
 !
-!
+crypto pki certificate chain TP-self-signed-71247510
+ certificate self-signed 01
+  3082032C 30820214 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  2F312D30 2B060355 04030C24 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 37313234 37353130 301E170D 32333132 31393135 32303333 
+  5A170D33 33313231 38313532 3033335A 302F312D 302B0603 5504030C 24494F53 
+  2D53656C 662D5369 676E6564 2D436572 74696669 63617465 2D373132 34373531 
+  30308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 0A028201 
+  0100AF24 B773985F 22FC649C BB8D0237 816A3ED4 B5AB538B B0F21DC0 CC5363D8 
+  FF3F8D20 A23A467C D221FEE4 5A21798C 060883EF 0E542124 B0391B2C BC4C0317 
+  C792A9E8 AC19EC95 7C75CFC4 19506798 00EAB460 B3672CF2 5952AAE5 F533070F 
+  484E5E2B B659462F EC8B4AAB 9A2FDB33 4B14E50A 1EC1B6EB 8C706924 E95BC369 
+  239D3017 3F2664F3 BE704929 207D173B 79A52B09 BA902890 DE155C78 6BB95A7E 
+  6A362E63 DB5DA174 0700E8D8 2433C055 0C8CADEE 79A8D722 D3979648 9B1826D5 
+  3227F91E CFE3ECEF 2DB10C56 6513D8B3 E59A41B1 F5725ABD 3264881B 30C9835A 
+  CF3F40FE 9C02CDD9 FFF886BC 7621D9F9 0846040F BDF3B375 5D2765A9 7E611E3A 
+  71470203 010001A3 53305130 1D060355 1D0E0416 04146CD1 9065F177 45952B64 
+  BA2ACD67 D2B7A034 6C8F301F 0603551D 23041830 1680146C D19065F1 7745952B 
+  64BA2ACD 67D2B7A0 346C8F30 0F060355 1D130101 FF040530 030101FF 300D0609 
+  2A864886 F70D0101 0B050003 82010100 2E83B2C5 30A1C232 0CC4DD27 ADF86466 
+  071E0BD4 75C215EE FAE3D159 717F6254 54381D72 2070ED3D 41250A9E 99D7639E 
+  38A4400C 7052007E C822871A 78AC66EA 1B6C67E0 F747C405 A1D2E057 B0DC704A 
+  54C5B1BD 3C4C4648 09FB13FE 444D9B46 FDA8BA0D 1C5CB713 EC8C14ED 235DBBCB 
+  0949D9DD B371FCB8 B29056EC C628B418 4C937663 860D79D2 AEB263BC 285E4682 
+  A7A20127 0157F616 9CA24434 A214A0B8 DC5D0C59 1409885F 813AC3F3 A26C5D25 
+  7B2ED508 46E9244A 1CE719C9 C6A283A9 74288EA9 CBE6FDB0 C7E4EA64 C35EF670 
+  92A867E5 290848D1 F71679C3 3FB0A848 6E8D6E50 0ED13C24 55CBADEB 111B4420 
+  08B396A4 6EFC07DC 9A9F8FE9 9E6D9930
+  quit
 crypto pki certificate chain SLA-TrustPoint
  certificate ca 01
   30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
@@ -98,36 +129,7 @@ crypto pki certificate chain SLA-TrustPoint
   80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
   418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
   D697DF7F 28
-  	quit
-crypto pki certificate chain TP-self-signed-154110252
- certificate self-signed 01
-  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
-  30312E30 2C060355 04030C25 494F532D 53656C66 2D536967 6E65642D 43657274 
-  69666963 6174652D 31353431 31303235 32301E17 0D323331 32313630 32333135 
-  365A170D 33333132 31353032 33313536 5A303031 2E302C06 03550403 0C25494F 
-  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3135 34313130 
-  32353230 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02 
-  82010100 8AFDF53F 513AB5E7 1E00849E 2FEEA05E 2F8D3E72 C341B2FF 6CB05AAB 
-  B2EDFF43 E18CCEEB F5083680 BA222334 AC0E519F 38DF64BD 40A1820B 65EB1741 
-  B5FBD90C 019FEA67 888199BD 9FC7D332 EB4329C7 B057021C 5AC7020E D261C538 
-  0F959DA0 9F9661ED F725A93F A47508BF C68D8740 13AA038A A50B4F77 919E289E 
-  313725D8 B8384160 04384C98 A8E97492 79B26B59 79009418 39736CEA DD3174AB 
-  75C22915 A71AAB3F 93BB77B4 F962CE1E 68A1467C 9F0AAB70 B576E1BA E832BBA9 
-  47CC06D4 D938CB3B D05FB149 67E1A9D6 F85FC6AA BD1E5DBB A3BEFB32 604D774F 
-  F3A20CE9 8B44231F 6B3CE319 D4F67BE0 D8EC3867 A2D891B6 37936292 CD6D31B8 
-  136F8247 02030100 01A35330 51301D06 03551D0E 04160414 8A7C46FB F5F16425 
-  92F37E6D 085656D0 102528AE 301F0603 551D2304 18301680 148A7C46 FBF5F164 
-  2592F37E 6D085656 D0102528 AE300F06 03551D13 0101FF04 05300301 01FF300D 
-  06092A86 4886F70D 01010B05 00038201 01004480 75C49318 007E0EBC 42194541 
-  6CF35AE2 BEFC62AC E0F7F545 B6B6ACA9 CF8BD150 81680265 B22019CD 14041C80 
-  9C8151D6 BDA2E608 EE186D12 238E4D8B F327B6F5 8C6090DF 8BE31A59 97D95E31 
-  158435CE 6A6BF39D BE8AB2B2 2BF7688A 45BA9B80 D03BB088 F005772E CFFB1078 
-  84BA4153 E54BEB10 94943599 C50B07AC EED1816C 9DE6803D 769442D1 91CF39CD 
-  855933FC 3F66A3DE E168CBD3 164C85F1 A42F6723 F105C2CA 229BA832 A3D61080 
-  D063C5AD FB2AE5FE E90FA1BB 2F033FB9 967958A9 879A06B5 560B73FA 0F501E54 
-  14C917C3 82E5D562 79C87E5B 76DCA5D3 8FC562DE D05350D3 564F835E 036A167F 
-  156CBFF8 42D7E104 1E228F67 06B7903F 23A5
-  	quit
+  quit
 !
 !
 !
@@ -137,19 +139,19 @@ crypto pki certificate chain TP-self-signed-154110252
 !
 !
 !
-license udi pid C8000V sn 9HBYUMCK66S
+license udi pid C8000V sn 9WHFPTYRACT
 license boot level network-advantage addon dna-advantage
-memory free low-watermark processor 63718
+memory free low-watermark processor 70586
 diagnostic bootup level minimal
 !
 !
 spanning-tree extend system-id
 !
-enable secret 9 $9$CFf75eFYaA8uPk$5FTQx9jBvosSx9rnpA5RcdMDVrvKkCi0417/uxoy4zc
+enable secret 9 $9$ot4Fm1JGVCdNS.$fiwhootfQwjgsolIrnUYSWkUuWhAAfF1a2FCazvXfvI
 !
-username admin privilege 15 secret 9 $9$AclqoNe/cMlaBk$oTWxrcvy0zHar4AlZxNJM701dEw4pesR6vPu5JZLqdw
-username cisco privilege 15 secret 9 $9$gxFqenvdSRplg.$oQxbVmdCaQiFnCJXqlKfX0IJAVwraRs/J83N26OSCNk
-username ndfc privilege 15 secret 9 $9$Zn8/1q03aUCubk$arznjcSIW9Ms3E.2NX8TQGytcyEuCR5vf5Uie.e7Od6
+username admin privilege 15 secret 9 $9$HmAMuF7bskeSZU$Le/M8hmWeixj5mSEdUcxRf/SC4ouh778qfa/rEoYWvE
+username cisco privilege 15 secret 9 $9$QW3UHV.LMC3z1E$cC.d2qaszhy8TymVYNPFd4WRBgqrJvxnin3fxNMXcqs
+username ndfc privilege 15 secret 9 $9$T/dBbbvGdqos5E$zY6rC3pyko9FDCEiW/3QsERpv6sEvlg09y/rIezjvFo
 !
 redundancy
 !
@@ -177,48 +179,58 @@ redundancy
 !
 !
 interface Loopback0
- ip address 169.254.77.77 255.255.255.255
+ ip address 169.254.52.52 255.255.255.255
+!
+interface Loopback1
+ ip address 169.44.52.52 255.255.255.255
+ ip router isis UNDERLAY
 !
 interface GigabitEthernet1
- mtu 9000
- ip address 169.26.77.2 255.255.255.252
+ description to campus-1 sw-48
+ ip address 169.44.0.5 255.255.255.252
  no ip redirects
  no ip proxy-arp
+ ip router isis UNDERLAY
  negotiation auto
- cdp enable
+ no ipv6 redirects
  no mop enabled
  no mop sysid
+ isis network point-to-point 
 !
 interface GigabitEthernet2
- mtu 9000
- ip address 169.28.77.2 255.255.255.252
+ description to campus-1 sw-49
+ ip address 169.44.0.9 255.255.255.252
  no ip redirects
  no ip proxy-arp
+ ip router isis UNDERLAY
  negotiation auto
- cdp enable
+ no ipv6 redirects
  no mop enabled
  no mop sysid
+ isis network point-to-point 
 !
 interface GigabitEthernet3
- mtu 9000
- ip address 169.75.77.2 255.255.255.252
+ description to campus-1 rtr-53
+ ip address 169.44.0.1 255.255.255.252
+ no ip redirects
+ no ip proxy-arp
+ ip router isis UNDERLAY
+ negotiation auto
+ no ipv6 redirects
+ no mop enabled
+ no mop sysid
+ isis network point-to-point 
+!
+interface GigabitEthernet4
+ ip address 169.45.52.2 255.255.255.252
  no ip redirects
  no ip proxy-arp
  negotiation auto
- cdp enable
- no mop enabled
- no mop sysid
-!
-interface GigabitEthernet4
- mtu 9000
- no ip address
- shutdown
- negotiation auto
+ no ipv6 redirects
  no mop enabled
  no mop sysid
 !
 interface GigabitEthernet5
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -226,7 +238,6 @@ interface GigabitEthernet5
  no mop sysid
 !
 interface GigabitEthernet6
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -234,7 +245,6 @@ interface GigabitEthernet6
  no mop sysid
 !
 interface GigabitEthernet7
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -242,7 +252,6 @@ interface GigabitEthernet7
  no mop sysid
 !
 interface GigabitEthernet8
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -250,7 +259,6 @@ interface GigabitEthernet8
  no mop sysid
 !
 interface GigabitEthernet9
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -258,7 +266,6 @@ interface GigabitEthernet9
  no mop sysid
 !
 interface GigabitEthernet10
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -266,7 +273,6 @@ interface GigabitEthernet10
  no mop sysid
 !
 interface GigabitEthernet11
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -274,7 +280,6 @@ interface GigabitEthernet11
  no mop sysid
 !
 interface GigabitEthernet12
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -282,7 +287,6 @@ interface GigabitEthernet12
  no mop sysid
 !
 interface GigabitEthernet13
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -290,7 +294,6 @@ interface GigabitEthernet13
  no mop sysid
 !
 interface GigabitEthernet14
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -298,7 +301,6 @@ interface GigabitEthernet14
  no mop sysid
 !
 interface GigabitEthernet15
- mtu 9000
  no ip address
  shutdown
  negotiation auto
@@ -307,7 +309,6 @@ interface GigabitEthernet15
 !
 interface GigabitEthernet16
  description Mgmt-intf
- vrf forwarding Mgmt-vrf
  no ip address
  no ip redirects
  no ip proxy-arp
@@ -319,43 +320,53 @@ interface GigabitEthernet16.203
  description Mgmt-vrf
  encapsulation dot1Q 203
  vrf forwarding Mgmt-vrf
- ip address 172.21.203.77 255.255.255.0
+ ip address 172.21.203.52 255.255.255.0
  no ip redirects
  no ip proxy-arp
  no ipv6 redirects
 !
-router bgp 65022
- bgp router-id 169.254.77.77
+router isis UNDERLAY
+ net 49.0000.0000.0000.0052.00
+ is-type level-2-only
+ router-id Loopback0
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0
+ default-information originate
+!
+router bgp 65044
+ bgp router-id 169.254.52.52
+ bgp always-compare-med
  bgp log-neighbor-changes
+ bgp deterministic-med
+ bgp graceful-restart
+ bgp bestpath med missing-as-worst
+ bgp bestpath compare-routerid
  no bgp default ipv4-unicast
- neighbor 169.26.77.1 remote-as 65002
- neighbor 169.26.77.1 fall-over bfd
- neighbor 169.28.77.1 remote-as 65002
- neighbor 169.28.77.1 fall-over bfd
- neighbor 169.75.77.1 remote-as 65011
- neighbor 169.75.77.1 fall-over bfd
+ neighbor 169.45.52.1 remote-as 65033
  !
  address-family ipv4
-  redistribute connected route-map conn-to-bgp
-  neighbor 169.26.77.1 activate
-  neighbor 169.28.77.1 activate
-  neighbor 169.75.77.1 activate
-  maximum-paths 4
-  maximum-paths ibgp 4
+  redistribute connected route-map CONN-TO-BGP
+  redistribute isis UNDERLAY route-map ISIS-TO-BGP
+  neighbor 169.45.52.1 activate
  exit-address-family
 !
 ip forward-protocol nd
 ip tcp path-mtu-discovery
 !
+ip bgp-community new-format
 no ip http server
 ip http authentication local
-no ip http secure-server
+ip http secure-server
 ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 172.21.203.254
 ip ssh bulk-mode 131072
 !
 !
 !
-route-map conn-to-bgp permit 100 
+route-map CONN-TO-BGP permit 100 
+ set origin igp
+!
+route-map ISIS-TO-BGP permit 100 
  set origin igp
 !
 snmp-server community NETBRAIN RO
@@ -388,7 +399,6 @@ line vty 0 4
  privilege level 15
  logging synchronous
  login local
- length 0
  transport input all
 !
 call-home
@@ -408,4 +418,4 @@ netconf-yang
 restconf
 end
 
-c8kv-77
+c8kv-52
